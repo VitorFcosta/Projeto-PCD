@@ -10,7 +10,7 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Header Moderno */}
+      {/* Header*/}
       <header className="bg-white dark:bg-gray-800 shadow-lg border-b-2 border-blue-600 dark:border-blue-500 sticky top-0 z-50">
         <div className="container-page py-4">
           <div className="flex items-center justify-between mb-4">
