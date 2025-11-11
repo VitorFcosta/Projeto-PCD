@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-
+//teste de git
 export default function AdminPage() {
   const navigate = useNavigate();
 
