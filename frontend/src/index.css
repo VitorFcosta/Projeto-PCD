@@ -1,78 +1,201 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* opcional: estilos utilitários */
-.container-page {
-  @apply w-full max-w-2xl mx-auto px-4;;
-}
+/* ========================================
+   DESIGN SYSTEM PROFISSIONAL
+   Incluir+ Empregos - v3.0
+   ======================================== */
 
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  justify-content: center; /* centraliza na horizontal */
-  align-items: flex-start; /* mantém alinhado no topo (se não quiser no meio da tela) */
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
+@layer base {
   :root {
-    color: #213547;
-    background-color: #ffffff;
+    /* Cores Primárias - Azul Corporativo */
+    --primary-50: 239 246 255;
+    --primary-100: 219 234 254;
+    --primary-200: 191 219 254;
+    --primary-300: 147 197 253;
+    --primary-400: 96 165 250;
+    --primary-500: 59 130 246;
+    --primary-600: 37 99 235;
+    --primary-700: 29 78 216;
+    --primary-800: 30 64 175;
+    --primary-900: 30 58 138;
+
+    /* Cores Secundárias - Verde Sucesso */
+    --secondary-50: 236 253 245;
+    --secondary-100: 209 250 229;
+    --secondary-200: 167 243 208;
+    --secondary-300: 110 231 183;
+    --secondary-400: 52 211 153;
+    --secondary-500: 16 185 129;
+    --secondary-600: 5 150 105;
+    --secondary-700: 4 120 87;
+    --secondary-800: 6 95 70;
+    --secondary-900: 6 78 59;
+
+    /* Cores de Acento - Roxo Inovação */
+    --accent-50: 250 245 255;
+    --accent-100: 243 232 255;
+    --accent-200: 233 213 255;
+    --accent-300: 216 180 254;
+    --accent-400: 192 132 252;
+    --accent-500: 168 85 247;
+    --accent-600: 147 51 234;
+    --accent-700: 126 34 206;
+    --accent-800: 107 33 168;
+    --accent-900: 88 28 135;
+
+    /* Cores Neutras */
+    --gray-50: 249 250 251;
+    --gray-100: 243 244 246;
+    --gray-200: 229 231 235;
+    --gray-300: 209 213 219;
+    --gray-400: 156 163 175;
+    --gray-500: 107 114 128;
+    --gray-600: 75 85 99;
+    --gray-700: 55 65 81;
+    --gray-800: 31 41 55;
+    --gray-900: 17 24 39;
   }
-  a:hover {
-    color: #747bff;
+
+  .dark {
+    --gray-50: 17 24 39;
+    --gray-100: 31 41 55;
+    --gray-200: 55 65 81;
+    --gray-300: 75 85 99;
+    --gray-400: 107 114 128;
+    --gray-500: 156 163 175;
+    --gray-600: 209 213 219;
+    --gray-700: 229 231 235;
+    --gray-800: 243 244 246;
+    --gray-900: 249 250 251;
   }
-  button {
-    background-color: #f9f9f9;
+
+  * {
+    @apply border-gray-200 dark:border-gray-700;
+  }
+
+  html {
+    @apply antialiased scroll-smooth;
+    font-feature-settings: 'cv11', 'ss01';
+  }
+
+  body {
+    @apply bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold tracking-tight;
+  }
+
+  h1 {
+    @apply text-4xl md:text-5xl lg:text-6xl;
+  }
+
+  h2 {
+    @apply text-3xl md:text-4xl lg:text-5xl;
+  }
+
+  h3 {
+    @apply text-2xl md:text-3xl lg:text-4xl;
+  }
+
+  h4 {
+    @apply text-xl md:text-2xl;
+  }
+
+  p {
+    @apply text-base leading-relaxed;
+  }
+}
+
+@layer components {
+  /* Containers */
+  .container-pro {
+    @apply w-full mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl;
+  }
+
+  .container-narrow {
+    @apply w-full mx-auto px-4 sm:px-6 lg:px-8 max-w-4xl;
+  }
+
+  /* Seções */
+  .section {
+    @apply py-16 md:py-24 lg:py-32;
+  }
+
+  /* Botões */
+  .btn {
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-lg font-semibold text-base transition-all duration-200 focus:outline-none focus:ring-4 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-primary {
+    @apply bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl focus:ring-blue-200 dark:focus:ring-blue-800;
+  }
+
+  .btn-secondary {
+    @apply bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-2 border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 shadow-md hover:shadow-lg focus:ring-gray-200 dark:focus:ring-gray-700;
+  }
+
+  .btn-lg {
+    @apply px-8 py-4 text-lg;
+  }
+
+  /* Cards */
+  .card {
+    @apply bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700 transition-all duration-200;
+  }
+
+  .card-hover {
+    @apply hover:shadow-2xl hover:-translate-y-1;
+  }
+
+  /* Badges */
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold;
+  }
+
+  .badge-primary {
+    @apply bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300;
+  }
+
+  .badge-success {
+    @apply bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300;
+  }
+
+  /* Inputs */
+  .input {
+    @apply w-full px-4 py-3 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 dark:focus:ring-blue-900 transition-all duration-200;
+  }
+
+  .label {
+    @apply block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2;
+  }
+
+  /* Loading */
+  .loading-spinner {
+    @apply inline-block w-6 h-6 border-4 border-gray-200 dark:border-gray-700 border-t-blue-600 dark:border-t-blue-500 rounded-full animate-spin;
+  }
+}
+
+@layer utilities {
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.5s ease-out forwards;
   }
 }

@@ -15,7 +15,7 @@ export default function CandidatoBarreirasForm({ candidatoId, subtipo }: Props) 
 
   useEffect(() => {
     api.listarBarreirasPorSubtipo(subtipo.id)
-      .then((b) => setBarreiras(b.barreiras || []))
+      .then((b) => setBarreiras(b || []))
       .catch((e) => setErro(e.message));
   }, [subtipo.id]);
 

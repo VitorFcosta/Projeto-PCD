@@ -81,7 +81,8 @@ model Empresa {
   id        Int     @id @default(autoincrement())
   nome      String
   cnpj      String? @unique
-  email     String? @unique
+  email     String  @unique
+  senha     String
   vagas     Vaga[]
 
   isActive  Boolean  @default(true)
@@ -127,7 +128,8 @@ model VagaAcessibilidade {
 model Candidato {
   id        Int                 @id @default(autoincrement())
   nome      String              
-  email     String?             @unique
+  email     String              @unique
+  senha     String
   telefone  String?
   escolaridade String
 

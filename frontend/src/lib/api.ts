@@ -1,5 +1,6 @@
 
 import type { TipoDeficiencia, TipoComSubtipos, SubtipoDeficiencia, Barreira, Acessibilidade, Vaga, Candidato } from "../types";
+import type { AuthResult } from "../types/auth";
 const BASE_URL = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
 
 async function http<T>(path: string, init?: RequestInit): Promise<T> {
@@ -141,5 +142,31 @@ obterVagaComSubtipos(vagaId: number) {
   },
    async listarVagasCompativeis(candidatoId: number): Promise<Vaga[]> {
     return http<Vaga[]>(`/match/${candidatoId}`);
+  },
+  // Autenticação - Candidato
+  registroCandidato(data: { nome: string; email: string; senha: string; escolaridade: string; telefone?: string }): Promise<AuthResult> {
+    return http("/auth/candidato/registro", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  },
+  loginCandidato(email: string, senha: string): Promise<AuthResult> {
+    return http("/auth/candidato/login", {
+      method: "POST",
+      body: JSON.stringify({ email, senha }),
+    });
+  },
+  // Autenticação - Empresa
+  registroEmpresa(data: { nome: string; email: string; senha: string; cnpj?: string }): Promise<AuthResult> {
+    return http("/auth/empresa/registro", {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+  },
+  loginEmpresa(email: string, senha: string): Promise<AuthResult> {
+    return http("/auth/empresa/login", {
+      method: "POST",
+      body: JSON.stringify({ email, senha }),
+    });
   },
 };
