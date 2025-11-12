@@ -18,8 +18,34 @@ export const MatchRepo = {
     });
   },
 
+  getAllCandidatosComBarreiras() {
+    return prisma.candidato.findMany({
+      include: {
+        subtipos: {
+          include: {
+            subtipo: true,
+            barreiras: {
+              include: { barreira: true },
+            },
+          },
+        },
+      },
+    });
+  },
+
   async getVagasComDetalhes() {
     return prisma.vaga.findMany({
+      include: {
+        empresa: true,
+        subtiposAceitos: { include: { subtipo: true } },
+        acessibilidades: { include: { acessibilidade: true } },
+      },
+    });
+  },
+
+  async getVagaComDetalhesById(vagaId: number) {
+    return prisma.vaga.findUnique({
+      where: { id: vagaId },
       include: {
         empresa: true,
         subtiposAceitos: { include: { subtipo: true } },

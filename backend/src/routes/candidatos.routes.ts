@@ -8,6 +8,7 @@ const router = Router();
 router.get("/", CandidatosController.listar);
 router.post("/", CandidatosController.criar);
 router.get("/:id", CandidatosController.buscarPorId);
+router.put("/:id", CandidatosController.atualizar);
 
 router.get("/:id/subtipos", CandidatoSubtiposController.listar);
 router.post("/:id/subtipos", CandidatoSubtiposController.vincular);

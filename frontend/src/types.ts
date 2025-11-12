@@ -21,6 +21,8 @@ export type TipoDeficiencia = {
 };
 
 export type SubtipoDeficiencia = {
+  subtipoId: any;
+  subtipo: any;
   id: number;
   nome: string;
   tipoId: number;
@@ -43,6 +45,7 @@ export type Empresa = {
 };
 
 export type Vaga = {
+  acessibilidades: any;
   id: number;
   descricao: string;
   escolaridade: string;
@@ -72,3 +75,25 @@ export type CandidatoSubtipoBarreira = {
   barreiraId: number;
   barreira: Barreira;
 };
+
+export interface VagaComMatchScore {
+  vaga: Vaga;
+  matchScore: number;
+  barreirasAtendidas: number;
+  barreirasFaltantes: number;
+  totalBarreirasCandidato: number;
+}
+export interface VagaComMatchScore {
+  vaga: Vaga;
+  matchScore: number;
+  barreirasAtendidas: number;
+  barreirasFaltantes: number;
+  totalBarreirasCandidato: number;
+}
+export interface CandidatoComMatchScore {
+  candidato: Candidato;
+  matchScore: number;
+  barreirasAtendidas: number;
+  barreirasFaltantes: number;
+  totalBarreirasVaga: number;
+}

@@ -24,7 +24,25 @@ export const EmpresasRepo = {
     return prisma.empresa.findUnique({ where: { cnpj } });
   },
 
-  create(nome: string, cnpj?: string, email?: string) {
-    return prisma.empresa.create({ data: { nome, cnpj, email } });
+  create(nome: string, email: string, senha: string, cnpj?: string) {
+    return prisma.empresa.create({ 
+      data: { 
+        nome, 
+        email: email,
+        senha: senha,
+        cnpj: cnpj || null 
+      } 
+    });
+  },
+
+  update(id: number, nome: string, email: string, cnpj?: string) {
+    return prisma.empresa.update({
+      where: { id },
+      data: {
+        nome,
+        email: email,
+        cnpj: cnpj || null,
+      },
+    });
   },
 };

@@ -4,5 +4,8 @@ import { MatchController } from "../controllers/match.controller";
 
 export const matchRoutes = Router();
 
-// GET /match/:candidatoId
+// Rota para o CANDIDATO ver vagas
 matchRoutes.get("/:candidatoId", MatchController.listarVagasCompativeis);
+
+// Rota para a EMPRESA ver candidatos de uma vaga
+matchRoutes.get("/vaga/:vagaId", MatchController.listarCandidatosCompativeis);

@@ -22,7 +22,19 @@ export const CandidatosRepo = {
     });
   },
 
-  create(data: { nome: string; email?: string; telefone?: string ; escolaridade: string}) {
+  create(data: { nome: string; email: string; senha: string; telefone?: string ; escolaridade: string}) {
     return prisma.candidato.create({ data });
+  },
+
+  update(id: number, data: { nome: string; email: string; telefone?: string | null ; escolaridade: string}) {
+    return prisma.candidato.update({
+      where: { id },
+      data: {
+        nome: data.nome,
+        email: data.email,
+        telefone: data.telefone,
+        escolaridade: data.escolaridade,
+      }
+    });
   },
 };

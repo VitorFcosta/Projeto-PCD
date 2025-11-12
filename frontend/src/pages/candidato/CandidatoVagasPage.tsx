@@ -1,30 +1,35 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { api } from "../../lib/api";
-import type { Vaga } from "../../types";
-import DashboardLayout from "../../components/DashboardLayout";
+import type { VagaComMatchScore } from "../../types";
+
+// --- Ícones ---
+const IconSearch = () => <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>;
+const IconFilter = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" /></svg>;
+const IconBuilding = () => <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V10m0 0l-7-7-7 7m14 0h-3l-4-4-4 4H5m14 0v11a2 2 0 01-2 2H7a2 2 0 01-2-2V10" /></svg>;
+const IconGraduation = () => <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" /></svg>;
+const IconCheck = () => <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>;
+const IconAlert = () => <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>;
+// --- Fim Ícones ---
+
 
 export default function CandidatoVagasPage() {
   const { id } = useParams();
+  const navigate = useNavigate(); // Hook para navegação
   const candidatoId = Number(id);
-  const [vagas, setVagas] = useState<Vaga[]>([]);
+  
+  const [vagas, setVagas] = useState<VagaComMatchScore[]>([]);
+  
   const [loading, setLoading] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
-  const [userName, setUserName] = useState<string>("");
-
-  useEffect(() => {
-    const user = localStorage.getItem("user");
-    if (user) {
-      const userData = JSON.parse(user);
-      setUserName(userData.name || userData.nome || userData.email);
-    }
-  }, []);
+  const [filtroEscolaridade, setFiltroEscolaridade] = useState<string>("todas");
 
   async function carregar() {
     setErro(null);
     setLoading(true);
     try {
-      const data = await api.listarVagasCompativeis(candidatoId);
+      // Usamos 'as' para forçar a tipagem, caso a 'api.ts' não esteja atualizada
+      const data = (await api.listarVagasCompativeis(candidatoId)) as VagaComMatchScore[];
       setVagas(data);
     } catch (err: any) {
       setErro(err.message ?? "Erro ao carregar vagas");
@@ -37,197 +42,155 @@ export default function CandidatoVagasPage() {
     carregar();
   }, [candidatoId]);
 
+  const vagasFiltradas = filtroEscolaridade === "todas" 
+    ? vagas 
+    : vagas.filter(v => v.vaga.escolaridade === filtroEscolaridade);
+
+  const escolaridadesUnicas = Array.from(new Set(vagas.map(v => v.vaga.escolaridade)));
+
   if (loading) {
     return (
-      <DashboardLayout userType="candidato" userId={candidatoId} userName={userName}>
-        <div className="flex flex-col items-center justify-center py-16">
-          <div className="loading-spinner w-12 h-12 mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400 text-lg">Buscando vagas compatíveis...</p>
+      <div className="flex items-center justify-center py-20">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-gray-500 font-medium">Buscando as melhores oportunidades...</p>
         </div>
-      </DashboardLayout>
-    );
-  }
-
-  if (erro) {
-    return (
-      <DashboardLayout userType="candidato" userId={candidatoId} userName={userName}>
-        <div className="card">
-          <div className="p-6 bg-red-50 dark:bg-red-900/20 border-2 border-red-200 dark:border-red-800 rounded-xl" role="alert">
-            <div className="flex items-start">
-              <div className="w-12 h-12 bg-red-100 dark:bg-red-900/40 rounded-lg flex items-center justify-center flex-shrink-0 mr-4">
-                <svg className="w-6 h-6 text-red-600 dark:text-red-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-lg font-semibold text-red-800 dark:text-red-300 mb-1">
-                  Erro ao carregar vagas
-                </h3>
-                <p className="text-red-700 dark:text-red-400">{erro}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </DashboardLayout>
+      </div>
     );
   }
 
   return (
-    <DashboardLayout userType="candidato" userId={candidatoId} userName={userName}>
-      <div className="space-y-6 animate-fade-in">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-              Vagas Compatíveis
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400">
-              Encontramos {vagas.length} {vagas.length === 1 ? 'vaga' : 'vagas'} que atendem suas necessidades
-            </p>
-          </div>
-          <button
-            onClick={carregar}
-            className="btn btn-secondary"
-            disabled={loading}
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-            <span>Atualizar</span>
-          </button>
-        </div>
+    <div className="space-y-6">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 border border-gray-200 dark:border-gray-700">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Vagas para Você</h1>
+        <p className="text-lg text-gray-600 dark:text-gray-400">
+           Encontramos <span className="font-bold text-emerald-600 dark:text-emerald-400">{vagas.length} oportunidades</span> ranqueadas por compatibilidade.
+        </p>
+      </div>
 
-        {/* Lista de Vagas */}
-        {vagas.length === 0 ? (
-          <div className="card text-center py-16">
-            <div className="w-20 h-20 bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <svg className="w-10 h-10 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
-            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
-              Nenhuma vaga encontrada
-            </h3>
-            <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
-              No momento, não há vagas que atendam completamente aos seus requisitos de acessibilidade. Configure seu perfil ou volte mais tarde.
-            </p>
-            <a href={`/candidato/${candidatoId}`} className="btn btn-primary inline-flex">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-              </svg>
-              <span>Configurar Perfil</span>
-            </a>
+      {vagas.length > 0 && (
+        <div className="flex items-center justify-between bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            <IconFilter />
+            <span className="text-sm font-bold text-gray-700 dark:text-gray-300 whitespace-nowrap">Filtrar por:</span>
+            <select
+              value={filtroEscolaridade}
+              onChange={(e) => setFiltroEscolaridade(e.target.value)}
+              className="w-full sm:w-auto bg-gray-50 dark:bg-gray-700 border-none text-gray-900 dark:text-white text-sm rounded-lg focus:ring-2 focus:ring-emerald-500 p-2.5"
+            >
+              <option value="todas">Todas as escolaridades</option>
+              {escolaridadesUnicas.map(esc => (
+                <option key={esc} value={esc}>{esc}</option>
+              ))}
+            </select>
           </div>
-        ) : (
-          <div className="grid gap-6">
-            {vagas.map((vaga, index) => (
-              <div
-                key={vaga.id}
-                className="card card-hover animate-fade-in"
-                style={{ animationDelay: `${index * 100}ms` }}
-              >
-                <div className="flex flex-col lg:flex-row gap-6">
-                  {/* Logo/Ícone da Empresa */}
-                  <div className="flex-shrink-0">
-                    <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-                      <span className="text-3xl font-bold text-white">
-                        {vaga.empresa?.nome?.charAt(0).toUpperCase() || "E"}
-                      </span>
+          <div className="hidden sm:block text-sm text-gray-500">
+            Mostrando <strong>{vagasFiltradas.length}</strong> resultados
+          </div>
+        </div>
+      )}
+      
+      {erro && (
+        <div className="bg-red-50 text-red-700 p-4 rounded-xl border border-red-200 text-center">
+          <p>{erro}</p>
+          <button onClick={carregar} className="mt-2 text-sm font-bold underline">Tentar novamente</button>
+        </div>
+      )}
+
+      {vagasFiltradas.length === 0 && !erro && (
+        <div className="text-center py-16 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700">
+          <div className="mx-auto w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4 text-gray-400">
+            <IconSearch />
+          </div>
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white">Nenhuma vaga encontrada</h3>
+          <p className="text-gray-500 mt-2">Tente ajustar seus filtros ou volte mais tarde.</p>
+          {filtroEscolaridade !== "todas" && (
+            <button onClick={() => setFiltroEscolaridade("todas")} className="mt-4 text-emerald-600 font-bold">Limpar filtros</button>
+          )}
+        </div>
+      )}
+
+      <div className="grid gap-6">
+        {vagasFiltradas.map(({ vaga, matchScore, barreirasAtendidas, barreirasFaltantes }) => (
+          <div
+            key={vaga.id}
+            className={`group bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border-2 border-gray-200 dark:border-gray-700`}
+          >
+            <div className="p-6">
+              <div className="flex flex-col md:flex-row gap-6">
+                <div className="flex-shrink-0">
+                  <div className="w-16 h-16 rounded-xl bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-2xl font-bold text-gray-500 dark:text-gray-300">
+                    {vaga.empresa?.nome?.charAt(0).toUpperCase() || "E"}
+                  </div>
+                </div>
+
+                <div className="flex-1">
+                  <div className="mb-4">
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white group-hover:text-emerald-600 transition-colors">
+                      {vaga.descricao}
+                    </h2>
+                    <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 mt-1">
+                      <IconBuilding />
+                      <span className="font-medium">{vaga.empresa?.nome || "Empresa Confidencial"}</span>
                     </div>
                   </div>
 
-                  {/* Conteúdo Principal */}
-                  <div className="flex-1 min-w-0">
-                    {/* Título e Empresa */}
-                    <div className="mb-4">
-                      <div className="flex items-start justify-between gap-4 mb-2">
-                        <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-                          {vaga.descricao}
-                        </h3>
-                        <span className="badge badge-success flex-shrink-0">
-                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                          </svg>
-                          <span>100% Compatível</span>
-                        </span>
+                  <div className="flex flex-wrap gap-2 mb-6">
+                    <span className="flex items-center gap-1.5 px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm font-medium text-gray-700 dark:text-gray-300">
+                      <IconGraduation />
+                      {vaga.escolaridade}
+                    </span>
+                  </div>
+
+                  <div className="bg-gray-50 dark:bg-gray-700/30 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
+                    <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-3">
+                      Nível de Compatibilidade
+                    </h3>
+                    
+                    <div className="flex flex-col sm:flex-row items-center gap-4">
+                      <div className="flex-shrink-0 text-6xl font-bold text-emerald-600 dark:text-emerald-400">
+                        {Math.round(matchScore * 100)}%
                       </div>
-                      <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                        </svg>
-                        <span className="font-medium">{vaga.empresa?.nome || "Empresa"}</span>
+                      
+                      <div className="flex-1">
+                        <ul className="space-y-1">
+                          <li className="flex items-center gap-2 text-emerald-700 dark:text-emerald-300">
+                            <IconCheck />
+                            <span className="font-medium">
+                              Atende {barreirasAtendidas} {barreirasAtendidas === 1 ? 'barreira' : 'barreiras'}
+                            </span>
+                          </li>
+                          {barreirasFaltantes > 0 && (
+                            <li className="flex items-center gap-2 text-red-600 dark:text-red-400">
+                              <IconAlert />
+                              <span className="font-medium">
+                                Faltam {barreirasFaltantes} {barreirasFaltantes === 1 ? 'barreira' : 'barreiras'}
+                              </span>
+                            </li>
+                          )}
+                        </ul>
                       </div>
                     </div>
-
-                    {/* Requisitos */}
-                    <div className="grid md:grid-cols-2 gap-4 mb-4">
-                      {/* Escolaridade */}
-                      <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                        <svg className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                        </svg>
-                        <span className="text-sm font-medium">
-                          Escolaridade: {vaga.escolaridade}
-                        </span>
-                      </div>
-
-                      {/* Subtipos */}
-                      {vaga.subtipos && vaga.subtipos.length > 0 && (
-                        <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                          <svg className="w-5 h-5 text-purple-600 dark:text-purple-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                          </svg>
-                          <span className="text-sm font-medium">
-                            {vaga.subtipos.length} {vaga.subtipos.length === 1 ? 'subtipo aceito' : 'subtipos aceitos'}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Tags */}
-                    {vaga.subtipos && vaga.subtipos.length > 0 && (
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {vaga.subtipos.slice(0, 4).map((subtipo) => (
-                          <span 
-                            key={subtipo.id}
-                            className="badge badge-primary"
-                          >
-                            {subtipo.nome}
-                          </span>
-                        ))}
-                        {vaga.subtipos.length > 4 && (
-                          <span className="badge badge-primary">
-                            +{vaga.subtipos.length - 4} mais
-                          </span>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Footer */}
-                    <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
-                      <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
-                        <div className="flex items-center gap-1">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                          <span>Publicado recentemente</span>
-                        </div>
-                      </div>
-                      <button className="btn btn-primary">
-                        <span>Ver Detalhes</span>
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                        </svg>
-                      </button>
-                    </div>
+                    
                   </div>
                 </div>
               </div>
-            ))}
+            </div>
+            
+            <div className="px-6 py-4 bg-gray-50 dark:bg-gray-700/30 border-t border-gray-100 dark:border-gray-700 rounded-b-2xl flex flex-col sm:flex-row gap-2 justify-between items-center">
+               <span className="text-sm text-gray-500">
+                 {barreirasFaltantes > 0 ? "Pode ser necessário verificar algumas barreiras" : "Excelente compatibilidade!"}
+               </span>
+               <button 
+                onClick={() => navigate(`${vaga.id}`)}
+                className="px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-all font-bold shadow-md hover:shadow-lg w-full sm:w-auto"
+               >
+                 Ver Detalhes
+               </button>
+            </div>
           </div>
-        )}
+        ))}
       </div>
-    </DashboardLayout>
+    </div>
   );
 }
