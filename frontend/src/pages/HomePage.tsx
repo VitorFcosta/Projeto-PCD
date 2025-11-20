@@ -57,7 +57,6 @@ export default function HomePage() {
                   </div>
                   <div>
                     <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-1">Grátis</div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">Para Sempre</div>
                   </div>
                 </div>
               </div>
@@ -241,26 +240,6 @@ export default function HomePage() {
                   Cadastrar como Empresa
                 </Link>
               </div>
-            </div>
-          </div>
-        </section>
-
-        {/* CTA Final */}
-        <section className="section bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white">
-          <div className="container-pro text-center">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
-              Pronto para Começar?
-            </h2>
-            <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-              Junte-se a centenas de candidatos e empresas que já estão promovendo a inclusão no mercado de trabalho
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/register" className="btn bg-white text-blue-600 hover:bg-gray-100 btn-lg shadow-xl">
-                Cadastre-se Grátis
-              </Link>
-              <Link to="/login" className="btn bg-transparent border-2 border-white text-white hover:bg-white/10 btn-lg">
-                Já tenho conta
-              </Link>
             </div>
           </div>
         </section>

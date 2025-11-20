@@ -1,52 +1,21 @@
-import { useEffect, useState } from "react";
-import { api } from "../lib/api";
-import type { Acessibilidade } from "../types";
-
 import AcessibilidadeForm from "../components/AcessibilidadeForm";
 import VincularAcessibilidadeForm from "../components/VincularAcessibilidadeForm";
-
+import { useAcessibilidades } from "../hooks/admin/useAcessibilidades";
 
 export default function AcessibilidadesPage() {
-  const [acessibilidades, setAcessibilidades] = useState<Acessibilidade[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [erro, setErro] = useState<string | null>(null);
-
-  async function carregar() {
-    setErro(null);
-    setLoading(true);
-    try {
-      const data = await api.listarAcessibilidades();
-      setAcessibilidades(data);
-    } catch (e: any) {
-      setErro(e.message ?? "Erro ao carregar barreiras");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    carregar();
-  }, []);
+  const { acessibilidades, loading, erro, carregar } = useAcessibilidades();
 
   return (
     <div className="container-page space-y-6 py-8">
       <header>
         <h1 className="text-2xl font-bold">Acessibilidade</h1>
-        <p className="text-gray-600">
-          Crie novas acessibilidades e vincule a barreiras.
-        </p>
+        <p className="text-gray-600">Recursos e adaptações.</p>
       </header>
-
       <AcessibilidadeForm onCreated={carregar}/>
       <VincularAcessibilidadeForm onLinked={carregar}/>
-
-      {loading ? (
-        <div className="card">Carregando...</div>
-      ) : erro ? (
-        <div className="card text-red-600">{erro}</div>
-      ) : (
+      {loading ? <div className="card">Carregando...</div> : erro ? <div className="card text-red-600">{erro}</div> : (
         <div className="card">
-          <h3 className="text-lg font-semibold mb-3">Acessibilidades cadastradas</h3>
+          <h3 className="text-lg font-semibold mb-3">Cadastradas ({acessibilidades.length})</h3>
           <ul className="divide-y">
             {acessibilidades.map((a) => (
               <li key={a.id} className="py-2 flex justify-between">

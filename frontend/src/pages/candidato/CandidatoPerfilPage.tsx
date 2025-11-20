@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { api } from "../../lib/api";
+import { useCandidatoPerfil } from "../../hooks/candidato/useCandidatoPerfil";
 
 // Ícones
 const IconLoading = () => <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>;
@@ -8,64 +7,9 @@ const IconCheck = () => <svg className="w-5 h-5" fill="none" stroke="currentColo
 
 export default function CandidatoPerfilPage() {
   const { id } = useParams();
-  const candidatoId = Number(id);
-
-  const [loading, setLoading] = useState(true);
-  const [salvando, setSalvando] = useState(false);
-  const [erro, setErro] = useState<string | null>(null);
-  const [sucesso, setSucesso] = useState<string | null>(null);
-
-  // Estados do formulário
-  const [nome, setNome] = useState("");
-  const [email, setEmail] = useState("");
-  const [telefone, setTelefone] = useState("");
-  const [escolaridade, setEscolaridade] = useState("Ensino Fundamental");
-
-  useEffect(() => {
-    async function carregarCandidato() {
-      if (isNaN(candidatoId)) {
-        setErro("ID de candidato inválido.");
-        setLoading(false);
-        return;
-      }
-      try {
-        setErro(null);
-        setLoading(true);
-        const data = await api.getCandidato(candidatoId);
-        setNome(data.nome || "");
-        setEmail(data.email || "");
-        setTelefone(data.telefone || "");
-        setEscolaridade(data.escolaridade || "Ensino Fundamental");
-      } catch (err: any) {
-        setErro(err.message || "Erro ao carregar perfil.");
-      } finally {
-        setLoading(false);
-      }
-    }
-    carregarCandidato();
-  }, [candidatoId]);
-
-  async function handleSalvar(e: React.FormEvent) {
-    e.preventDefault();
-    setSalvando(true);
-    setErro(null);
-    setSucesso(null);
-
-    try {
-      await api.atualizarCandidato(candidatoId, {
-        nome: nome.trim(),
-        email: email.trim(),
-        telefone: telefone.trim(),
-        escolaridade: escolaridade,
-      });
-      setSucesso("Perfil atualizado com sucesso!");
-      setTimeout(() => setSucesso(null), 3000);
-    } catch (err: any) {
-      setErro(err.message || "Erro ao salvar.");
-    } finally {
-      setSalvando(false);
-    }
-  }
+  
+  // Lógica extraída
+  const { loading, salvando, erro, sucesso, form, setForm, handleSalvar } = useCandidatoPerfil(Number(id));
 
   if (loading) {
     return (
@@ -92,8 +36,8 @@ export default function CandidatoPerfilPage() {
           <input
             id="nome"
             type="text"
-            value={nome}
-            onChange={(e) => setNome(e.target.value)}
+            value={form.nome}
+            onChange={(e) => setForm.setNome(e.target.value)}
             className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-emerald-500"
             required
           />
@@ -106,8 +50,8 @@ export default function CandidatoPerfilPage() {
           <input
             id="email"
             type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={form.email}
+            onChange={(e) => setForm.setEmail(e.target.value)}
             className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-emerald-500"
             required
           />
@@ -120,8 +64,8 @@ export default function CandidatoPerfilPage() {
           <input
             id="telefone"
             type="tel"
-            value={telefone}
-            onChange={(e) => setTelefone(e.target.value)}
+            value={form.telefone}
+            onChange={(e) => setForm.setTelefone(e.target.value)}
             placeholder="(00) 00000-0000"
             className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-emerald-500"
           />
@@ -133,8 +77,8 @@ export default function CandidatoPerfilPage() {
           </label>
           <select
             id="escolaridade"
-            value={escolaridade}
-            onChange={(e) => setEscolaridade(e.target.value)}
+            value={form.escolaridade}
+            onChange={(e) => setForm.setEscolaridade(e.target.value)}
             className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-emerald-500"
             required
           >

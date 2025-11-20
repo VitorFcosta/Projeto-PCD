@@ -1,94 +1,15 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { api } from "../lib/api";
+import { Link } from "react-router-dom";
+import { useRegister } from "../hooks/login/useRegister";
 
 export default function RegisterPage() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    userType: "candidato" as "candidato" | "empresa",
-    escolaridade: "",
-    cnpj: "",
-    telefone: "",
-  });
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-
-    try {
-      // Validações simples
-      if (!formData.name || !formData.email || !formData.password) {
-        throw new Error("Todos os campos obrigatórios devem ser preenchidos");
-      }
-
-      if (formData.password !== formData.confirmPassword) {
-        throw new Error("As senhas não correspondem");
-      }
-
-      if (formData.password.length < 6) {
-        throw new Error("A senha deve ter pelo menos 6 caracteres");
-      }
-
-      let resultado;
-
-      if (formData.userType === "candidato") {
-        if (!formData.escolaridade) {
-          throw new Error("Escolaridade é obrigatória para candidatos");
-        }
-        resultado = await api.registroCandidato({
-          nome: formData.name,
-          email: formData.email,
-          senha: formData.password,
-          escolaridade: formData.escolaridade,
-          telefone: formData.telefone,
-        });
-      } else {
-        resultado = await api.registroEmpresa({
-          nome: formData.name,
-          email: formData.email,
-          senha: formData.password,
-          cnpj: formData.cnpj,
-        });
-      }
-
-      // Armazenar dados do usuário no localStorage
-      localStorage.setItem(
-        "user",
-        JSON.stringify({
-          id: resultado.id,
-          nome: resultado.nome,
-          email: resultado.email,
-          userType: formData.userType,
-        })
-      );
-
-      // Redirecionar baseado no tipo de usuário
-      if (formData.userType === "candidato") {
-        navigate(`/candidato/${resultado.id}`);
-      } else {
-        navigate(`/empresa/${resultado.id}`);
-      }
-    } catch (err: any) {
-      setError(err.message || "Erro ao registrar");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { 
+    formData, 
+    setFormData, 
+    handleChange, 
+    handleRegister, 
+    error, 
+    loading 
+  } = useRegister();
 
   return (
     <div className="min-h-screen flex">
@@ -235,7 +156,7 @@ export default function RegisterPage() {
             <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
-                onClick={() => setFormData({ ...formData, userType: "candidato" })}
+                onClick={() => setFormData(prev => ({ ...prev, userType: "candidato" }))}
                 className={`p-4 rounded-lg border-2 transition-all duration-200 ${
                   formData.userType === "candidato"
                     ? "border-green-600 bg-green-50 dark:bg-green-900/20"
@@ -254,7 +175,7 @@ export default function RegisterPage() {
 
               <button
                 type="button"
-                onClick={() => setFormData({ ...formData, userType: "empresa" })}
+                onClick={() => setFormData(prev => ({ ...prev, userType: "empresa" }))}
                 className={`p-4 rounded-lg border-2 transition-all duration-200 ${
                   formData.userType === "empresa"
                     ? "border-green-600 bg-green-50 dark:bg-green-900/20"
@@ -373,7 +294,7 @@ export default function RegisterPage() {
 
                 <div>
                   <label htmlFor="telefone" className="label">
-                    Telefone (opcional)
+                    Telefone
                   </label>
                   <input
                     id="telefone"
@@ -390,7 +311,7 @@ export default function RegisterPage() {
             ) : (
               <div>
                 <label htmlFor="cnpj" className="label">
-                  CNPJ (opcional)
+                  CNPJ
                 </label>
                 <input
                   id="cnpj"
