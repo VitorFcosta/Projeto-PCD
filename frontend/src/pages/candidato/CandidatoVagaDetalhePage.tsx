@@ -1,58 +1,201 @@
-import { useParams, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { useCandidatoVagaDetalhe } from "../../hooks/candidato/useCandidatoVagaDetalhe";
 
-// --- ÍCONES ---
-const IconBuilding = () => <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V10m0 0l-7-7-7 7m14 0h-3l-4-4-4 4H5m14 0v11a2 2 0 01-2 2H7a2 2 0 01-2-2V10" /></svg>;
-const IconGraduation = () => <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" /></svg>;
-const IconCheck = () => <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>;
-const IconAlert = () => <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>;
-const IconArrowLeft = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>;
-const IconSend = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>;
-const IconLoading = () => <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>;
+import ContainerPagina from "../../components/ui/ContainerPagina";
+import Cartao from "../../components/ui/Cartao";
+import Botao from "../../components/ui/Botao";
+import Carregando from "../../components/ui/Carregando";
+import TituloSecao from "../../components/ui/TituloSecao";
+
+import { IconVoltar, IconCheck, IconAlerta } from "../../components/icons";
 
 export default function CandidatoVagaDetalhePage() {
   const { id, vagaId } = useParams();
   const navigate = useNavigate();
-  const { vagaMatch, loading, enviando, sucesso, erro, candidatar } = useCandidatoVagaDetalhe(Number(id), vagaId);
 
-  useEffect(() => { if (sucesso) navigate(`/candidato/${id}/vagas/${vagaId}/sucesso`); }, [sucesso]);
+  const candidatoId = Number(id);
 
-  if (loading) return <div className="flex justify-center p-12">Carregando...</div>;
-  if (erro || !vagaMatch) return <div className="text-center p-12">{erro || "Vaga não encontrada"}</div>;
+  const { vagaMatch, loading, enviando, sucesso, erro, candidatar } =
+    useCandidatoVagaDetalhe(candidatoId, vagaId);
 
-  const { vaga, matchScore, barreirasAtendidas, barreirasFaltantes } = vagaMatch;
+  useEffect(() => {
+    if (sucesso && id && vagaId) {
+      navigate(`/candidato/${id}/vagas/${vagaId}/sucesso`);
+    }
+  }, [sucesso, id, vagaId, navigate]);
 
-  return (
-    <div className="max-w-3xl mx-auto space-y-6">
-      <button onClick={() => navigate(`/candidato/${id}/vagas`)} className="flex items-center gap-2 text-gray-500 hover:text-emerald-600"><IconArrowLeft /> Voltar</button>
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-        <div className="p-8">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-16 h-16 rounded-xl bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-2xl font-bold text-gray-500">{vaga.empresa?.nome?.charAt(0).toUpperCase() || "E"}</div>
-            <div><h1 className="text-3xl font-bold text-gray-900 dark:text-white">{vaga.descricao}</h1><div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 mt-1"><IconBuilding /><span className="font-medium">{vaga.empresa?.nome}</span></div></div>
-          </div>
-          <div className="flex flex-wrap gap-2 mb-8"><span className="flex items-center gap-1.5 px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm font-medium text-gray-700 dark:text-gray-300"><IconGraduation />{vaga.escolaridade}</span></div>
-          <div className="bg-emerald-50 dark:bg-emerald-900/30 rounded-xl p-6 border border-emerald-200 dark:border-emerald-700">
-            <h3 className="text-lg font-bold text-emerald-800 dark:text-emerald-300 mb-4">Análise de Compatibilidade</h3>
-            <div className="flex flex-col sm:flex-row items-center gap-6">
-              <div className="flex-shrink-0 text-7xl font-bold text-emerald-600 dark:text-emerald-400">{Math.round(matchScore * 100)}%</div>
-              <div className="flex-1">
-                <ul className="space-y-2">
-                  <li className="flex items-center gap-2 text-emerald-700 dark:text-emerald-300"><IconCheck /><span className="font-medium">Atende {barreirasAtendidas} barreiras</span></li>
-                  {barreirasFaltantes > 0 && <li className="flex items-center gap-2 text-red-600 dark:text-red-400"><IconAlert /><span className="font-medium">Faltam {barreirasFaltantes} barreiras</span></li>}
-                </ul>
-              </div>
-            </div>
-          </div>
-          <div className="mt-8"><h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Sobre a Vaga</h3><p className="text-gray-700 dark:text-gray-300 leading-relaxed">Esta é uma descrição de exemplo para a vaga de {vaga.descricao}.</p></div>
-        </div>
-        <div className="px-8 py-6 bg-gray-50 dark:bg-gray-700/30 border-t border-gray-100 dark:border-gray-700">
-          <button onClick={candidatar} disabled={enviando} className="w-full px-8 py-4 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-all font-bold shadow-lg hover:shadow-xl flex items-center justify-center gap-2 text-lg disabled:opacity-50">
-            {enviando ? <><IconLoading /><span>Enviando...</span></> : <><IconSend /> Candidatar-se a esta Vaga</>}
-          </button>
+  if (Number.isNaN(candidatoId) || !vagaId) {
+    return (
+      <ContainerPagina className="py-10">
+        <Cartao className="max-w-md mx-auto text-center space-y-3">
+          <IconAlerta size={32} className="text-rose-500 mx-auto" />
+          <p className="text-base text-gray-200">
+            Parâmetros inválidos para carregar a vaga.
+          </p>
+          <Botao onClick={() => navigate(-1)}>
+            <IconVoltar size={16} />
+            Voltar
+          </Botao>
+        </Cartao>
+      </ContainerPagina>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="flex flex-col items-center gap-2">
+          <Carregando tamanho={30} />
+          <p className="text-base text-gray-100 font-semibold">
+            Carregando vaga...
+          </p>
         </div>
       </div>
+    );
+  }
+
+  if (erro || !vagaMatch) {
+    return (
+      <ContainerPagina className="py-10">
+        <Cartao className="max-w-md mx-auto text-center space-y-3">
+          {erro && (
+            <IconAlerta size={32} className="text-rose-500 mx-auto" />
+          )}
+          <p className="text-base text-gray-200">
+            {erro || "Vaga não encontrada."}
+          </p>
+          <Botao onClick={() => navigate(-1)}>
+            <IconVoltar size={16} />
+            Voltar
+          </Botao>
+        </Cartao>
+      </ContainerPagina>
+    );
+  }
+
+  const {
+    vaga,
+    matchScore,
+    barreirasAtendidas,
+    barreirasFaltantes,
+    barreirasQueDeramMatch = [],
+  } = vagaMatch;
+
+  const porcentagem = Math.round(matchScore * 100);
+
+  return (
+    <div className="min-h-screen py-8">
+      <ContainerPagina className="max-w-3xl space-y-4">
+        {/* Voltar para lista */}
+        <button
+          type="button"
+          onClick={() => navigate(`/candidato/${candidatoId}/vagas`)}
+          className="flex items-center gap-2 text-sm text-gray-300 hover:text-gray-100"
+        >
+          <IconVoltar size={16} />
+          Voltar
+        </button>
+
+        {/* Card único */}
+        <Cartao className="space-y-6">
+          <TituloSecao
+            titulo={vaga.descricao}
+            subtitulo={vaga.empresa?.nome ?? ""}
+          />
+
+          {/* resumo da vaga */}
+          <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm">
+            <span className="rounded-full border border-gray-700 px-3 py-1 text-gray-300">
+              Escolaridade:{" "}
+              <span className="font-semibold text-gray-50">
+                {vaga.escolaridade}
+              </span>
+            </span>
+
+            <span className="rounded-full border border-emerald-500/70 px-3 py-1 text-emerald-300">
+              Compatibilidade:{" "}
+              <span className="font-semibold">{porcentagem}%</span>
+            </span>
+          </div>
+
+          <div className="border-t border-gray-800" />
+
+          {/* descrição */}
+          <section className="space-y-2">
+            <h3 className="text-sm font-semibold text-gray-100">
+              Descrição da vaga
+            </h3>
+            <p className="text-sm text-gray-300 whitespace-pre-line leading-relaxed">
+              {vaga.descricaoDetalhada ||
+                "Nenhuma descrição adicional foi informada."}
+            </p>
+          </section>
+
+          <div className="border-t border-gray-800" />
+
+          {/* acessibilidade / barreiras */}
+          <section className="space-y-2">
+            <h3 className="text-sm font-semibold text-gray-100">
+              Acessibilidade e barreiras
+            </h3>
+
+            <p className="text-sm text-gray-300">
+              <span className="text-emerald-300 font-semibold">
+                {barreirasAtendidas}
+              </span>{" "}
+              barreira(s) do seu perfil atendida(s) •{" "}
+              <span className="text-amber-300 font-semibold">
+                {barreirasFaltantes}
+              </span>{" "}
+              não atendida(s)
+            </p>
+
+            {/* lista das barreiras que deram match */}
+            {barreirasQueDeramMatch.length > 0 ? (
+              <ul className="space-y-1 mt-2">
+                {barreirasQueDeramMatch.map((b) => (
+                  <li
+                    key={b.id}
+                    className="flex items-start gap-2 text-sm text-gray-200"
+                  >
+                    <span className="mt-1 w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                    <span>{b.descricao}</span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-xs text-gray-400">
+                Nenhuma barreira do seu perfil foi marcada como atendida.
+              </p>
+            )}
+          </section>
+
+          <div className="border-t border-gray-800" />
+
+          {/* botão de candidatura */}
+          <div className="flex justify-center">
+            <Botao
+              type="button"
+              onClick={candidatar}
+              disabled={enviando}
+              className="inline-flex items-center gap-2 text-sm sm:text-base px-6 py-3"
+            >
+              {enviando ? (
+                <>
+                  <Carregando tamanho={18} />
+                  Enviando candidatura...
+                </>
+              ) : (
+                <>
+                  <IconCheck size={18} />
+                  Confirmar candidatura
+                </>
+              )}
+            </Botao>
+          </div>
+        </Cartao>
+      </ContainerPagina>
     </div>
   );
 }

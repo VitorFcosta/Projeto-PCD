@@ -1,117 +1,150 @@
+import type { FormEvent } from "react";
 import { useParams } from "react-router-dom";
+
 import { useCandidatoPerfil } from "../../hooks/candidato/useCandidatoPerfil";
 
-// Ícones
-const IconLoading = () => <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>;
-const IconCheck = () => <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>;
+import ContainerPagina from "../../components/ui/ContainerPagina";
+import Cartao from "../../components/ui/Cartao";
+import CampoTexto from "../../components/ui/CampoTexto";
+import Botao from "../../components/ui/Botao";
+import Alerta from "../../components/ui/Alerta";
+import Carregando from "../../components/ui/Carregando";
+import TituloSecao from "../../components/ui/TituloSecao";
+
+import { IconCheck } from "../../components/icons";
 
 export default function CandidatoPerfilPage() {
   const { id } = useParams();
-  
-  // Lógica extraída
-  const { loading, salvando, erro, sucesso, form, setForm, handleSalvar } = useCandidatoPerfil(Number(id));
+  const candidatoId = id ? Number(id) : NaN;
+
+  const {
+    loading,
+    salvando,
+    erro,
+    sucesso,
+    form,
+    setForm,
+    handleSalvar,
+  } = useCandidatoPerfil(candidatoId);
+
+  function onSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    handleSalvar();
+  }
+
+  if (Number.isNaN(candidatoId)) {
+    return (
+      <ContainerPagina className="py-16">
+        <Cartao className="text-center">
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+            Candidato inválido
+          </h1>
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            O identificador do candidato não foi informado corretamente.
+          </p>
+        </Cartao>
+      </ContainerPagina>
+    );
+  }
 
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16">
-        <div className="text-center">
-          <div className="inline-block w-12 h-12 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400 text-lg">Carregando perfil...</p>
+        <div className="flex flex-col items-center gap-3">
+          <Carregando tamanho={28} />
+          <p className="text-gray-700 dark:text-gray-200 font-semibold">
+            Carregando perfil...
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-2xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 border border-gray-200 dark:border-gray-700">
-      <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-        Meus Dados Cadastrais
-      </h2>
-
-      <form onSubmit={handleSalvar} className="space-y-6">
-        <div>
-          <label htmlFor="nome" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Nome Completo *
-          </label>
-          <input
-            id="nome"
-            type="text"
-            value={form.nome}
-            onChange={(e) => setForm.setNome(e.target.value)}
-            className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-emerald-500"
-            required
+    <ContainerPagina className="py-6">
+      <Cartao className="space-y-6">
+        <header>
+          <TituloSecao
+            titulo="Informações pessoais"
+            subtitulo="Atualize os dados básicos do seu perfil. Eles serão vistos pelas empresas durante o processo de seleção."
           />
-        </div>
+        </header>
 
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Email de Contato *
-          </label>
-          <input
-            id="email"
-            type="email"
-            value={form.email}
-            onChange={(e) => setForm.setEmail(e.target.value)}
-            className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-emerald-500"
-            required
-          />
-        </div>
+        {sucesso && (
+          <Alerta tipo="sucesso">
+            {sucesso}
+          </Alerta>
+        )}
 
-        <div>
-          <label htmlFor="telefone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Telefone (opcional)
-          </label>
-          <input
-            id="telefone"
-            type="tel"
-            value={form.telefone}
-            onChange={(e) => setForm.setTelefone(e.target.value)}
-            placeholder="(00) 00000-0000"
-            className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-emerald-500"
-          />
-        </div>
+        {erro && (
+          <Alerta tipo="erro">
+            {erro}
+          </Alerta>
+        )}
 
-        <div>
-          <label htmlFor="escolaridade" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Escolaridade *
-          </label>
-          <select
-            id="escolaridade"
-            value={form.escolaridade}
-            onChange={(e) => setForm.setEscolaridade(e.target.value)}
-            className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-emerald-500"
-            required
-          >
-            <option value="Ensino Fundamental">Ensino Fundamental</option>
-            <option value="Ensino Médio">Ensino Médio</option>
-            <option value="Ensino Superior">Ensino Superior</option>
-            <option value="Pós-Graduação">Pós-Graduação</option>
-          </select>
-        </div>
+        <form onSubmit={onSubmit} className="space-y-6">
+          {/* Linha 1 */}
+          <div className="grid gap-4 sm:grid-cols-2">
+            <CampoTexto
+              rotulo="Nome completo"
+              value={form.nome}
+              onChange={(e) => setForm.setNome(e.target.value)}
+            />
 
-        <div className="pt-4 flex items-center gap-4">
-          <button
-            type="submit"
-            disabled={salvando}
-            className="px-8 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 disabled:opacity-50 transition-all shadow-lg flex items-center justify-center gap-2 font-semibold"
-          >
-            {salvando ? (
-              <>
-                <IconLoading />
-                <span>Salvando...</span>
-              </>
-            ) : (
-              <>
-                <IconCheck />
-                <span>Salvar Alterações</span>
-              </>
-            )}
-          </button>
-          
-          {sucesso && <span className="text-green-600 font-medium">{sucesso}</span>}
-          {erro && <span className="text-red-600 font-medium">{erro}</span>}
-        </div>
-      </form>
-    </div>
+            <CampoTexto
+              rotulo="E-mail"
+              type="email"
+              value={form.email}
+              onChange={(e) => setForm.setEmail(e.target.value)}
+            />
+          </div>
+
+          {/* Linha 2 */}
+          <div className="grid gap-4 sm:grid-cols-2">
+            <CampoTexto
+              rotulo="Telefone"
+              value={form.telefone}
+              onChange={(e) => setForm.setTelefone(e.target.value)}
+            />
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Escolaridade
+              </label>
+              <select
+                value={form.escolaridade}
+                onChange={(e) => setForm.setEscolaridade(e.target.value)}
+                className="w-full px-3 py-2 rounded-xl bg-white dark:bg-gray-800 border text-sm
+                  border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200 
+                  focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+              >
+                <option>Ensino Fundamental</option>
+                <option>Ensino Médio</option>
+                <option>Curso Técnico</option>
+                <option>Ensino Superior</option>
+                <option>Pós-graduação</option>
+              </select>
+            </div>
+          </div>
+
+          {/* salvar */}
+          <div className="flex items-center justify-end gap-4 pt-4 border-t border-gray-200 dark:border-gray-800">
+            <Botao type="submit" disabled={salvando}>
+              {salvando ? (
+                <>
+                  <Carregando tamanho={18} />
+                  <span>Salvando...</span>
+                </>
+              ) : (
+                <>
+                  <IconCheck size={18} />
+                  <span>Salvar alterações</span>
+                </>
+              )}
+            </Botao>
+          </div>
+        </form>
+      </Cartao>
+    </ContainerPagina>
   );
 }

@@ -1,6 +1,5 @@
-// src/services/match.service.ts
 import { MatchRepo } from "../repositories/match.repo";
-import { Vaga, Candidato } from "@prisma/client";
+import { Vaga, Candidato, Barreira } from "@prisma/client";
 
 export interface VagaComMatchScore {
   vaga: Vaga;
@@ -8,6 +7,7 @@ export interface VagaComMatchScore {
   barreirasAtendidas: number;
   barreirasFaltantes: number;
   totalBarreirasCandidato: number;
+  barreirasQueDeramMatch: Barreira[];
 }
 
 export async function encontrarVagasCompativeis(
@@ -29,8 +29,18 @@ export async function encontrarVagasCompativeis(
     return [];
   }
 
+  const mapaBarreiras = new Map<number, Barreira>();
+  for (const cs of candidato.subtipos) {
+    for (const cb of cs.barreiras) {
+      if (cb.barreira) {
+        mapaBarreiras.set(cb.barreiraId, cb.barreira);
+      }
+    }
+  }
+
   const vagasComScore = vagas.map((vaga) => {
     let barreirasAtendidas = 0;
+    const barreirasQueDeramMatch: Barreira[] = [];
 
     const aceitaSubtipo = candidato.subtipos.some((cs) =>
       vaga.subtiposAceitos.some((vs) => vs.subtipoId === cs.subtipoId)
@@ -43,6 +53,7 @@ export async function encontrarVagasCompativeis(
         barreirasAtendidas: 0,
         barreirasFaltantes: totalBarreirasCandidato,
         totalBarreirasCandidato,
+        barreirasQueDeramMatch: [],
       };
     }
 
@@ -61,6 +72,14 @@ export async function encontrarVagasCompativeis(
 
       if (atendeBarreira) {
         barreirasAtendidas++;
+
+        const barreiraObj = mapaBarreiras.get(barreiraId);
+        if (
+          barreiraObj &&
+          !barreirasQueDeramMatch.some((b) => b.id === barreiraObj.id)
+        ) {
+          barreirasQueDeramMatch.push(barreiraObj);
+        }
       }
     }
 
@@ -69,9 +88,10 @@ export async function encontrarVagasCompativeis(
     return {
       vaga,
       matchScore: score,
-      barreirasAtendidas: barreirasAtendidas,
+      barreirasAtendidas,
       barreirasFaltantes: totalBarreirasCandidato - barreirasAtendidas,
       totalBarreirasCandidato,
+      barreirasQueDeramMatch,
     };
   });
 
@@ -120,20 +140,6 @@ export async function encontrarCandidatosCompativeis(
       };
     }
 
-    const aceitaSubtipo = candidato.subtipos.some((cs) =>
-      vaga.subtiposAceitos.some((vs) => vs.subtipoId === cs.subtipoId)
-    );
-
-    if (!aceitaSubtipo) {
-      return {
-        candidato,
-        matchScore: 0,
-        barreirasAtendidas: 0,
-        barreirasFaltantes: totalBarreirasCandidato,
-        totalBarreirasVaga: totalBarreirasCandidato,
-      };
-    }
-
     for (const barreiraId of barreirasUnicasCandidato) {
       const acessCompativeis = mapaBA
         .filter((m) => m.barreiraId === barreiraId)
@@ -153,7 +159,7 @@ export async function encontrarCandidatosCompativeis(
     return {
       candidato,
       matchScore: score,
-      barreirasAtendidas: barreirasAtendidas,
+      barreirasAtendidas,
       barreirasFaltantes: totalBarreirasCandidato - barreirasAtendidas,
       totalBarreirasVaga: totalBarreirasCandidato,
     };
