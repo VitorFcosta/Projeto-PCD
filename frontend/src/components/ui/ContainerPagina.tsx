@@ -10,7 +10,7 @@ export default function ContainerPagina({
   className = "",
 }: ContainerPaginaProps) {
   return (
-    <div className={`max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 ${className}`}>
+    <div className={`w-full px-6 sm:px-10 lg:px-16 ${className}`}>
       {children}
     </div>
   );

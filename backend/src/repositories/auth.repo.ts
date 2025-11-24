@@ -54,4 +54,8 @@ export const AuthRepo = {
       },
     });
   },
+  //adimin
+  findAdminByEmail(email: string) {
+    return prisma.admin.findUnique({ where: { email } });
+  },
 };

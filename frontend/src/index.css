@@ -4,10 +4,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ========================================
-   DESIGN SYSTEM PROFISSIONAL
-   Incluir+ Empregos - v3.0
-   ======================================== */
 
 @layer base {
   :root {
@@ -197,5 +193,44 @@
 
   .animate-fade-in {
     animation: fade-in 0.5s ease-out forwards;
+  }
+  @keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  }
+
+  .animate-fade-in-up {
+    animation: fade-in-up 0.8s ease-out forwards;
+  }
+
+  /* Utilitário para esconder scrollbar na navegação mobile */
+  .scrollbar-hide::-webkit-scrollbar {
+      display: none;
+  }
+  .scrollbar-hide {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+  }
+  .high-contrast {
+  filter: contrast(150%);
+  }
+
+  .high-contrast * {
+    background-color: white !important;
+    color: black !important;
+    border-color: black !important;
+    box-shadow: none !important;
+  }
+
+  .high-contrast button, 
+  .high-contrast a {
+    text-decoration: underline;
+    font-weight: bold;
   }
 }

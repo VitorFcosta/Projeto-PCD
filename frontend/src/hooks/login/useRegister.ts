@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { api } from "../../lib/api";
+import { useAuth } from "../../context/AuthContext";
 
 export function useRegister() {
   const [formData, setFormData] = useState({
@@ -15,8 +15,10 @@ export function useRegister() {
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  
+  const { login } = useAuth();
 
+  // ... (handleChange mantém igual)
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -28,9 +30,9 @@ export function useRegister() {
     setLoading(true);
 
     try {
+      // ... (validações mantêm igual)
       if (!formData.name || !formData.email || !formData.password) throw new Error("Campos obrigatórios vazios");
       if (formData.password !== formData.confirmPassword) throw new Error("As senhas não correspondem");
-      if (formData.password.length < 6) throw new Error("Senha muito curta (min 6)");
 
       let resultado;
       if (formData.userType === "candidato") {
@@ -51,15 +53,13 @@ export function useRegister() {
         });
       }
 
-      localStorage.setItem("user", JSON.stringify({
+      // Login automático após registro
+      login({
         id: resultado.id,
         nome: resultado.nome,
         email: resultado.email,
         userType: formData.userType,
-      }));
-
-      if (formData.userType === "candidato") navigate(`/candidato/${resultado.id}`);
-      else navigate(`/empresa/${resultado.id}`);
+      });
 
     } catch (err: any) {
       setError(err.message || "Erro ao registrar");

@@ -56,4 +56,15 @@ export const AuthController = {
       res.status(401).json({ error: error.message });
     }
   },
+
+  //adimin
+   async loginAdmin(req: Request, res: Response) {
+    try {
+      const { email, senha } = req.body;
+      const result = await AuthService.loginAdmin(email, senha);
+      res.json(result);
+    } catch (error: any) {
+      res.status(401).json({ error: error.message });
+    }
+  },
 };

@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { api } from "../../lib/api";
+import { useAuth } from "../../context/AuthContext"; // <--- Importe o contexto
 
 export function useLogin() {
   const [email, setEmail] = useState("");
@@ -8,7 +8,8 @@ export function useLogin() {
   const [userType, setUserType] = useState<"candidato" | "empresa">("candidato");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  
+  const { login } = useAuth(); // <--- Use a função do contexto
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -17,19 +18,21 @@ export function useLogin() {
 
     try {
       let resultado;
+      // Nota: Se tiver login de admin, adicione aqui
       if (userType === "candidato") {
         resultado = await api.loginCandidato(email, password);
       } else {
         resultado = await api.loginEmpresa(email, password);
       }
 
-      localStorage.setItem("user", JSON.stringify(resultado));
+      // O Contexto cuida do localStorage e do redirecionamento
+      login({
+        id: resultado.id,
+        nome: resultado.nome,
+        email: resultado.email,
+        userType: userType // ou resultado.userType se o backend retornar
+      });
 
-      if (userType === "candidato") {
-        navigate(`/candidato/${resultado.id}`);
-      } else {
-        navigate(`/empresa/${resultado.id}`);
-      }
     } catch (err: any) {
       setError(err.message || "Erro ao fazer login");
     } finally {

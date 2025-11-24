@@ -1,5 +1,19 @@
 import { Link } from "react-router-dom";
 import { useRegister } from "../hooks/login/useRegister";
+import { 
+  User, 
+  Mail, 
+  Lock, 
+  Phone, 
+  GraduationCap, 
+  FileText, 
+  Building2, 
+  ArrowRight, 
+  Loader2,
+  AlertCircle,
+  Check,
+  Hexagon
+} from "lucide-react";
 
 export default function RegisterPage() {
   const { 
@@ -12,361 +26,276 @@ export default function RegisterPage() {
   } = useRegister();
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex bg-gray-50 dark:bg-gray-900 font-sans">
       {/* Lado Esquerdo - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-green-600 via-emerald-600 to-teal-600 p-12 flex-col justify-between relative overflow-hidden">
-        {/* Decoração de fundo */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
-          <div className="absolute bottom-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
-        </div>
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-600 p-12 flex-col justify-between relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
 
         <div className="relative z-10">
-          {/* Logo */}
           <Link to="/" className="flex items-center gap-3 text-white group">
-            <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-xl group-hover:scale-105 transition-transform">
-              <svg 
-                className="w-8 h-8 text-white" 
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                  strokeWidth={2.5} 
-                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" 
-                />
-              </svg>
+            <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-xl group-hover:scale-105 transition-transform">
+              <Hexagon className="w-7 h-7 text-white fill-current" />
             </div>
             <span className="text-2xl font-bold">Incluir+ Empregos</span>
           </Link>
         </div>
 
-        {/* Conteúdo Central */}
         <div className="relative z-10 text-white">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+          <h2 className="text-5xl font-bold mb-6 leading-tight">
             Comece sua jornada hoje!
           </h2>
-          <p className="text-xl text-green-100 leading-relaxed mb-8">
-            Cadastre-se gratuitamente e faça parte da maior plataforma de inclusão profissional do Brasil.
+          <p className="text-xl text-emerald-100 leading-relaxed mb-8">
+            Cadastre-se gratuitamente e faça parte da maior plataforma de inclusão profissional.
           </p>
           
-          {/* Benefits */}
           <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center flex-shrink-0">
-                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <span className="text-green-100">Cadastro rápido e simples</span>
+            <div className="flex items-center gap-3 text-emerald-50">
+              <div className="p-2 bg-white/10 rounded-lg"><Check className="w-5 h-5" /></div>
+              <span>Cadastro rápido e simples</span>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center flex-shrink-0">
-                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <span className="text-green-100">100% gratuito para sempre</span>
+            <div className="flex items-center gap-3 text-emerald-50">
+              <div className="p-2 bg-white/10 rounded-lg"><Check className="w-5 h-5" /></div>
+              <span>100% gratuito para sempre</span>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center flex-shrink-0">
-                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
-              </div>
-              <span className="text-green-100">Comece a usar imediatamente</span>
+            <div className="flex items-center gap-3 text-emerald-50">
+              <div className="p-2 bg-white/10 rounded-lg"><Check className="w-5 h-5" /></div>
+              <span>Conexão direta com recrutadores</span>
             </div>
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="relative z-10 text-green-100 text-sm">
-          <p>© 2024 Incluir+ Empregos. Todos os direitos reservados.</p>
+        <div className="relative z-10 text-emerald-100 text-sm">
+          <p>© 2025 Incluir+ Empregos.</p>
         </div>
       </div>
 
       {/* Lado Direito - Formulário */}
-      <div className="flex-1 flex items-center justify-center p-8 bg-gray-50 dark:bg-gray-900 overflow-y-auto">
-        <div className="w-full max-w-md py-8">
-          {/* Logo Mobile */}
+      <div className="flex-1 flex items-center justify-center p-4 sm:p-8 overflow-y-auto">
+        <div className="w-full max-w-lg py-8">
+          
           <div className="lg:hidden text-center mb-8">
             <Link to="/" className="inline-flex items-center gap-3 group">
-              <div className="w-12 h-12 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-                <svg 
-                  className="w-7 h-7 text-white" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <path 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                    strokeWidth={2.5} 
-                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" 
-                  />
-                </svg>
+              <div className="w-10 h-10 bg-emerald-600 rounded-lg flex items-center justify-center shadow-lg text-white">
+                <Hexagon className="w-6 h-6 fill-current" />
               </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                Incluir+ Empregos
+              <span className="text-xl font-bold text-gray-900 dark:text-white">
+                Incluir+
               </span>
             </Link>
           </div>
 
-          {/* Título */}
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
               Criar conta
             </h1>
             <p className="text-gray-600 dark:text-gray-400">
               Já tem uma conta?{" "}
-              <Link to="/login" className="text-blue-600 dark:text-blue-400 hover:underline font-semibold">
+              <Link to="/login" className="text-emerald-600 hover:text-emerald-700 font-semibold hover:underline">
                 Faça login
               </Link>
             </p>
           </div>
 
-          {/* Mensagem de Erro */}
           {error && (
-            <div 
-              className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 rounded-r-lg animate-fade-in"
-              role="alert"
-              aria-live="assertive"
-            >
-              <div className="flex items-start">
-                <svg className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mr-3" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
-                <div>
-                  <h3 className="text-sm font-semibold text-red-800 dark:text-red-300 mb-1">
-                    Erro no cadastro
-                  </h3>
-                  <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
-                </div>
+            <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 rounded-r-lg flex items-start gap-3 animate-fade-in">
+              <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 shrink-0" />
+              <div>
+                <h3 className="text-sm font-semibold text-red-800 dark:text-red-300 mb-1">Erro no cadastro</h3>
+                <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
               </div>
             </div>
           )}
 
-          {/* Seleção de Tipo de Usuário */}
           <div className="mb-6">
-            <label className="label">Cadastrar como</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Cadastrar como</label>
             <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
                 onClick={() => setFormData(prev => ({ ...prev, userType: "candidato" }))}
-                className={`p-4 rounded-lg border-2 transition-all duration-200 ${
+                className={`p-4 rounded-xl border-2 transition-all duration-200 ${
                   formData.userType === "candidato"
-                    ? "border-green-600 bg-green-50 dark:bg-green-900/20"
-                    : "border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500"
+                    ? "border-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 shadow-sm"
+                    : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 text-gray-600 dark:text-gray-400"
                 }`}
               >
                 <div className="flex flex-col items-center gap-2">
-                  <svg className={`w-8 h-8 ${formData.userType === "candidato" ? "text-green-600 dark:text-green-400" : "text-gray-400"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                  </svg>
-                  <span className={`font-semibold ${formData.userType === "candidato" ? "text-green-600 dark:text-green-400" : "text-gray-700 dark:text-gray-300"}`}>
-                    Candidato
-                  </span>
+                  <User className={`w-6 h-6 ${formData.userType === "candidato" ? "text-emerald-600" : "text-gray-400"}`} />
+                  <span className="font-semibold text-sm">Candidato</span>
                 </div>
               </button>
 
               <button
                 type="button"
                 onClick={() => setFormData(prev => ({ ...prev, userType: "empresa" }))}
-                className={`p-4 rounded-lg border-2 transition-all duration-200 ${
+                className={`p-4 rounded-xl border-2 transition-all duration-200 ${
                   formData.userType === "empresa"
-                    ? "border-green-600 bg-green-50 dark:bg-green-900/20"
-                    : "border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500"
+                    ? "border-emerald-600 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-300 shadow-sm"
+                    : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 text-gray-600 dark:text-gray-400"
                 }`}
               >
                 <div className="flex flex-col items-center gap-2">
-                  <svg className={`w-8 h-8 ${formData.userType === "empresa" ? "text-green-600 dark:text-green-400" : "text-gray-400"}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                  </svg>
-                  <span className={`font-semibold ${formData.userType === "empresa" ? "text-green-600 dark:text-green-400" : "text-gray-700 dark:text-gray-300"}`}>
-                    Empresa
-                  </span>
+                  <Building2 className={`w-6 h-6 ${formData.userType === "empresa" ? "text-emerald-600" : "text-gray-400"}`} />
+                  <span className="font-semibold text-sm">Empresa</span>
                 </div>
               </button>
             </div>
           </div>
 
-          {/* Formulário */}
           <form onSubmit={handleRegister} className="space-y-5">
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="name" className="label">
-                  Nome {formData.userType === "empresa" && "da Empresa"}
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                  {formData.userType === "candidato" ? "Nome Completo" : "Nome da Empresa"}
                 </label>
-                <input
-                  id="name"
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="input"
-                  placeholder={formData.userType === "candidato" ? "Seu nome completo" : "Nome da empresa"}
-                  required
-                  disabled={loading}
-                />
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                    {formData.userType === "candidato" ? <User className="w-4 h-4" /> : <Building2 className="w-4 h-4" />}
+                  </div>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
+                    required
+                  />
+                </div>
               </div>
 
               <div>
-                <label htmlFor="email" className="label">
-                  E-mail
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="input"
-                  placeholder="seu@email.com"
-                  required
-                  disabled={loading}
-                />
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">E-mail</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                    <Mail className="w-4 h-4" />
+                  </div>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
+                    required
+                  />
+                </div>
               </div>
             </div>
 
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="password" className="label">
-                  Senha
-                </label>
-                <input
-                  id="password"
-                  type="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="input"
-                  placeholder="Mínimo 6 caracteres"
-                  required
-                  disabled={loading}
-                />
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Senha</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                    <Lock className="w-4 h-4" />
+                  </div>
+                  <input
+                    type="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
+                    placeholder="Min. 6 caracteres"
+                    required
+                  />
+                </div>
               </div>
 
               <div>
-                <label htmlFor="confirmPassword" className="label">
-                  Confirmar Senha
-                </label>
-                <input
-                  id="confirmPassword"
-                  type="password"
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  className="input"
-                  placeholder="Digite novamente"
-                  required
-                  disabled={loading}
-                />
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Confirmar Senha</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                    <Lock className="w-4 h-4" />
+                  </div>
+                  <input
+                    type="password"
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
+                    required
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Campos específicos por tipo */}
             {formData.userType === "candidato" ? (
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="escolaridade" className="label">
-                    Escolaridade
-                  </label>
-                  <select
-                    id="escolaridade"
-                    name="escolaridade"
-                    value={formData.escolaridade}
-                    onChange={handleChange}
-                    className="input"
-                    required
-                    disabled={loading}
-                  >
-                    <option value="">Selecione</option>
-                    <option value="Fundamental">Ensino Fundamental</option>
-                    <option value="Médio">Ensino Médio</option>
-                    <option value="Superior">Ensino Superior</option>
-                    <option value="Pós-graduação">Pós-graduação</option>
-                  </select>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Escolaridade</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                      <GraduationCap className="w-4 h-4" />
+                    </div>
+                    <select
+                      name="escolaridade"
+                      value={formData.escolaridade}
+                      onChange={handleChange}
+                      className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all appearance-none cursor-pointer"
+                      required
+                    >
+                      <option value="">Selecione...</option>
+                      <option value="Fundamental">Ensino Fundamental</option>
+                      <option value="Médio">Ensino Médio</option>
+                      <option value="Superior">Ensino Superior</option>
+                      <option value="Pós-graduação">Pós-graduação</option>
+                    </select>
+                  </div>
                 </div>
 
                 <div>
-                  <label htmlFor="telefone" className="label">
-                    Telefone
-                  </label>
-                  <input
-                    id="telefone"
-                    type="tel"
-                    name="telefone"
-                    value={formData.telefone}
-                    onChange={handleChange}
-                    className="input"
-                    placeholder="(00) 00000-0000"
-                    disabled={loading}
-                  />
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Telefone</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                      <Phone className="w-4 h-4" />
+                    </div>
+                    <input
+                      type="tel"
+                      name="telefone"
+                      value={formData.telefone}
+                      onChange={handleChange}
+                      className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
+                      placeholder="(00) 00000-0000"
+                    />
+                  </div>
                 </div>
               </div>
             ) : (
               <div>
-                <label htmlFor="cnpj" className="label">
-                  CNPJ
-                </label>
-                <input
-                  id="cnpj"
-                  type="text"
-                  name="cnpj"
-                  value={formData.cnpj}
-                  onChange={handleChange}
-                  className="input"
-                  placeholder="00.000.000/0000-00"
-                  disabled={loading}
-                />
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">CNPJ</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                    <FileText className="w-4 h-4" />
+                  </div>
+                  <input
+                    type="text"
+                    name="cnpj"
+                    value={formData.cnpj}
+                    onChange={handleChange}
+                    className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-all"
+                    placeholder="00.000.000/0000-00"
+                  />
+                </div>
               </div>
             )}
 
-            <div className="flex items-start gap-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-              <svg className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
-                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-              </svg>
-              <p className="text-sm text-blue-800 dark:text-blue-300">
-                Ao criar sua conta, você concorda com nossos{" "}
-                <a href="/termos" className="underline hover:no-underline">Termos de Uso</a> e{" "}
-                <a href="/privacidade" className="underline hover:no-underline">Política de Privacidade</a>.
+            <div className="flex items-start gap-3 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-lg border border-gray-100 dark:border-gray-700">
+              <Check className="w-5 h-5 text-emerald-600 mt-0.5 shrink-0" />
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Ao criar sua conta, você concorda com nossos Termos de Uso e Política de Privacidade.
               </p>
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="btn btn-primary w-full"
+              className="w-full py-3.5 px-6 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2 disabled:opacity-70 transition-all active:scale-[0.98]"
             >
               {loading ? (
-                <>
-                  <div className="loading-spinner"></div>
-                  <span>Criando conta...</span>
-                </>
+                <><Loader2 className="w-5 h-5 animate-spin" /> Criando conta...</>
               ) : (
-                <>
-                  <span>Criar Conta Grátis</span>
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                  </svg>
-                </>
+                <>Criar Conta Grátis <ArrowRight className="w-5 h-5" /></>
               )}
             </button>
           </form>
-
-          {/* Link para Login */}
-          <div className="mt-8 text-center">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Já tem uma conta?{" "}
-              <Link to="/login" className="text-blue-600 dark:text-blue-400 hover:underline font-semibold">
-                Faça login
-              </Link>
-            </p>
-          </div>
         </div>
       </div>
     </div>

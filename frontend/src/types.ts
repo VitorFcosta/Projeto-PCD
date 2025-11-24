@@ -1,82 +1,103 @@
-export type Barreira = {
-  id: number;
-  descricao: string;
-  acessibilidades: Acessibilidade[]
-  createdAt?: string;
-  updatedAt?: string;
-};
 
-export type Acessibilidade = {
+export interface Acessibilidade {
   id: number;
   descricao: string;
   createdAt?: string;
   updatedAt?: string;
-};
+}
 
-export type TipoDeficiencia = {
+export interface Barreira {
   id: number;
-  nome: string;
+  descricao: string;
+  // Relação aninhada vinda do backend (BarreiraAcessibilidade)
+  acessibilidades?: { 
+    acessibilidade: Acessibilidade 
+  }[]; 
   createdAt?: string;
   updatedAt?: string;
-};
+}
 
-export type SubtipoDeficiencia = {
-  descricao: any;
-  subtipoId: any;
-  subtipo: any;
+export interface SubtipoDeficiencia {
   id: number;
   nome: string;
   tipoId: number;
+  // Relação aninhada vinda do backend (SubtipoBarreira)
+  barreiras?: { 
+    barreira: Barreira 
+  }[];
   createdAt?: string;
   updatedAt?: string;
-};
+}
 
-// útil para listar: cada tipo com seus subtipos
+export interface TipoDeficiencia {
+  id: number;
+  nome: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+// Tipo auxiliar para listagens
 export type TipoComSubtipos = TipoDeficiencia & {
   subtipos: SubtipoDeficiencia[];
 };
 
-export type Empresa = {
+// --- Empresa e Vaga ---
+
+export interface Empresa {
   id: number;
   nome: string;
   cnpj?: string;
-  email?: string;
+  email: string;
   createdAt?: string;
   updatedAt?: string;
-};
+}
 
-export type Vaga = {
-  descricaoDetalhada: string;
-  acessibilidades: any;
+export interface Vaga {
+  titulo(titulo: any): unknown;
   id: number;
+  empresaId: number;
+  empresa?: Empresa;
   descricao: string;
   escolaridade: string;
-  empresa: Empresa;
-  subtipos: SubtipoDeficiencia[];
-  createdAt?: string;
-  updatedAt?: string;
+  
+  // Listas de relacionamento
+  subtipos?: SubtipoDeficiencia[];
+  acessibilidades?: Acessibilidade[]; // Lista direta (flattened) ou aninhada dependendo do controller
+  
+  // Metadados
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  
+  // Estatísticas (opcional)
+  _count?: {
+    candidatos?: number;
+  };
+}
 
-};
+// --- Candidato ---
 
-export type Candidato = {
+export interface Candidato {
   id: number;
   nome: string;
   email?: string;
   telefone?: string;
   escolaridade: string;
   subtipos?: CandidatoSubtipo[];
-};
+}
 
-export type CandidatoSubtipo = {
+export interface CandidatoSubtipo {
   subtipoId: number;
   subtipo: SubtipoDeficiencia;
   barreiras?: CandidatoSubtipoBarreira[];
-};
+}
 
-export type CandidatoSubtipoBarreira = {
+export interface CandidatoSubtipoBarreira {
   barreiraId: number;
   barreira: Barreira;
-};
+}
+
+// --- Match ---
 
 export interface VagaComMatchScore {
   vaga: Vaga;
@@ -84,10 +105,8 @@ export interface VagaComMatchScore {
   barreirasAtendidas: number;
   barreirasFaltantes: number;
   totalBarreirasCandidato: number;
-  barreirasQueDeramMatch: Barreira[];
+  detalhes: DetalheMatch[]; 
 }
-
-
 
 export interface CandidatoComMatchScore {
   candidato: Candidato;
@@ -95,4 +114,9 @@ export interface CandidatoComMatchScore {
   barreirasAtendidas: number;
   barreirasFaltantes: number;
   totalBarreirasVaga: number;
+}
+export interface DetalheMatch {
+  barreira: Barreira;
+  acessibilidade?: Acessibilidade;
+  resolvida: boolean;
 }

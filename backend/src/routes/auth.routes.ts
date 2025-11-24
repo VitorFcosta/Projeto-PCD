@@ -10,5 +10,7 @@ router.post("/candidato/login", AuthController.loginCandidato);
 // Rotas de Empresa
 router.post("/empresa/registro", AuthController.registroEmpresa);
 router.post("/empresa/login", AuthController.loginEmpresa);
+//adimin
+router.post("/admin/login", AuthController.loginAdmin);
 
 export default router;

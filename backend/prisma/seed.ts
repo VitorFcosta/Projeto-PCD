@@ -93,11 +93,26 @@ async function main() {
     ],
     skipDuplicates: true,
   });
+  
+
+
+  await prisma.admin.upsert({
+    where: { email: "admin@admin.com" },
+    update: {},
+    create: {
+      nome: "Super Admin",
+      email: "admin@admin.com",
+      senha: "admin",
+    },
+  });
+
+  console.log("Admin criado: admin / admin");
 
   console.log("Seed concluído ✅");
 }
 
 main()
+
   .catch((e) => {
     console.error(e);
     process.exit(1);

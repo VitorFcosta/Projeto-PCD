@@ -1,29 +1,38 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { api } from "../../lib/api";
 import type { VagaComMatchScore } from "../../types";
 
 export function useCandidatoVagas(candidatoId: number) {
   const [vagas, setVagas] = useState<VagaComMatchScore[]>([]);
   const [loading, setLoading] = useState(true);
-  const [erro, setErro] = useState<string | null>(null);
-  const [filtroEscolaridade, setFiltroEscolaridade] = useState<string>("todas");
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => { if (candidatoId) carregar(); }, [candidatoId]);
+  const fetchVagas = useCallback(async () => {
+    if (!candidatoId || isNaN(candidatoId)) return;
 
-  async function carregar() {
     setLoading(true);
+    setError(null);
+    
     try {
+      // Chama o endpoint de Match Inteligente
       const data = await api.listarVagasCompativeis(candidatoId);
       setVagas(data);
     } catch (err: any) {
-      setErro(err.message ?? "Erro ao carregar vagas");
+      console.error("Erro ao buscar vagas:", err);
+      setError(err.message || "Não foi possível carregar as vagas compatíveis.");
     } finally {
       setLoading(false);
     }
-  }
+  }, [candidatoId]);
 
-  const vagasFiltradas = useMemo(() => filtroEscolaridade === "todas" ? vagas : vagas.filter((v) => v.vaga.escolaridade === filtroEscolaridade), [vagas, filtroEscolaridade]);
-  const escolaridadesUnicas = useMemo(() => Array.from(new Set(vagas.map((v) => v.vaga.escolaridade))), [vagas]);
+  useEffect(() => {
+    fetchVagas();
+  }, [fetchVagas]);
 
-  return { vagas: vagasFiltradas, totalVagas: vagas.length, loading, erro, filtroEscolaridade, setFiltroEscolaridade, escolaridadesUnicas, recarregar: carregar };
+  return { 
+    vagas, 
+    loading, 
+    error, 
+    refresh: fetchVagas 
+  };
 }

@@ -1,63 +1,68 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { api } from "../../lib/api";
+import type { Empresa, EmpresaUpdateDTO } from "../../types/empresa";
 
-export function useEmpresaPerfil(empresaId: number) {
-  const [loading, setLoading] = useState(true);
-  const [salvando, setSalvando] = useState(false);
-  const [erro, setErro] = useState<string | null>(null);
-  const [sucesso, setSucesso] = useState<string | null>(null);
+export function useEmpresaProfile(empresaId: number) {
+  const [empresa, setEmpresa] = useState<Empresa | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  
+  const navigate = useNavigate();
 
-  const [nome, setNome] = useState("");
-  const [email, setEmail] = useState("");
-  const [cnpj, setCnpj] = useState("");
-
-  useEffect(() => {
-    if (empresaId) carregar();
-  }, [empresaId]);
-
-  async function carregar() {
-    if (isNaN(empresaId)) {
-      setErro("ID inválido");
-      setLoading(false);
+  const fetchProfile = useCallback(async () => {
+    if (!empresaId || isNaN(empresaId)) {
+      setIsLoading(false);
       return;
     }
-    try {
-      setLoading(true);
-      setErro(null);
-      const data: any = await api.buscarEmpresa(empresaId);
-      setNome(data.nome || "");
-      setEmail(data.email || "");
-      setCnpj(data.cnpj || "");
-    } catch (err: any) {
-      setErro(err.message || "Erro ao carregar perfil");
-    } finally {
-      setLoading(false);
-    }
-  }
 
-  async function salvar() {
-    setSalvando(true);
-    setErro(null);
-    setSucesso(null);
     try {
-      await api.atualizarEmpresa(empresaId, {
-        nome: nome.trim(),
-        email: email.trim(),
-        cnpj: cnpj.trim(),
-      });
-      setSucesso("Perfil atualizado com sucesso!");
-      setTimeout(() => setSucesso(null), 3000);
+      setIsLoading(true);
+      // Cast para garantir a tipagem correta vinda da API
+      const data = await api.buscarEmpresa(empresaId) as Empresa;
+      setEmpresa(data);
     } catch (err: any) {
-      setErro(err.message || "Erro ao salvar");
+      setError(err.message || "Erro ao carregar perfil.");
     } finally {
-      setSalvando(false);
+      setIsLoading(false);
     }
-  }
+  }, [empresaId]);
 
-  return {
-    loading, salvando, erro, sucesso,
-    form: { nome, email, cnpj },
-    setForm: { setNome, setEmail, setCnpj },
-    salvar
+  useEffect(() => {
+    fetchProfile();
+  }, [fetchProfile]);
+
+  const updateProfile = async (data: EmpresaUpdateDTO) => {
+    setIsSaving(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      await api.atualizarEmpresa(empresaId, data);
+      setEmpresa((prev) => prev ? { ...prev, ...data } : null);
+      setSuccess("Perfil atualizado com sucesso.");
+      setTimeout(() => setSuccess(null), 3000);
+    } catch (err: any) {
+      setError(err.message || "Erro ao salvar.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const logout = () => {
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
+
+  return { 
+    empresa, 
+    isLoading, 
+    isSaving, 
+    error, 
+    success, 
+    updateProfile, 
+    logout 
   };
 }

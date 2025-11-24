@@ -32,80 +32,113 @@ async function http<T>(path: string, init?: RequestInit ): Promise<T> {
 }
 
 export const api = {
+
+  async candidatar(candidatoId: number, vagaId: number) {
+    return http("/match/aplicar", {
+      method: "POST",
+      body: JSON.stringify({ candidatoId, vagaId }),
+    });
+  },
+
   async atualizarEmpresa(id: number, data: { nome: string; email?: string; cnpj?: string }) {
     return http<Empresa>(`/empresas/${id}`, {
       method: "PUT",
       body: JSON.stringify(data),
     });
   },
+
   listarTipos() {
     return http<TipoDeficiencia[]>("/tipos" );
   },
+
   criarTipo(nome: string) {
     return http<TipoDeficiencia>("/tipos", {
       method: "POST",
       body: JSON.stringify({ nome } ),
     });
   },
+
   listarTiposComSubtipos(): Promise<TipoComSubtipos[]> {
     return http("/tipos/com-subtipos" );
   },
+
   criarSubtipo(nome: string, tipoId: number): Promise<SubtipoDeficiencia> {
     return http("/subtipos", {
       method: "POST",
       body: JSON.stringify({ nome, tipoId } ),
     });
   },
+
   listarBarreiras(): Promise<Barreira[]> {
     return http("/barreiras" );
   },
+
   listarAcessibilidades(): Promise<Acessibilidade[]> {
     return http("/acessibilidades" );
   },
+
   criarBarreira(descricao: string): Promise<Barreira> {
     return http("/barreiras", {
       method: "POST",
       body: JSON.stringify({ descricao } ),
     });
   },
+
   criarAcessibilidade(descricao: string): Promise<Acessibilidade> {
     return http("/acessibilidades", {
       method: "POST",
       body: JSON.stringify({ descricao } ),
     });
   },
+
   listarSubtipos(): Promise<SubtipoDeficiencia[]> {
     return http("/subtipos" );
   },
+
   vincularBarreirasASubtipo(subtipoId: number, barreiraIds: number[]) {
     return http(`/vinculos/subtipos/${subtipoId}/barreiras`, {
       method: "POST",
       body: JSON.stringify({ barreiraIds } ),
     });
   },
+
   vincularAcessibilidadesABarreira(barreiraId: number, acessibilidadeIds: number[]) {
     return http(`/vinculos/barreiras/${barreiraId}/acessibilidades`, {
       method: "POST",
       body: JSON.stringify({ acessibilidadeIds } ),
     });
   },
+
   async buscarEmpresa(id: number) {
     const res = await fetch(`${BASE_URL}/empresas/${id}` );
     if (!res.ok) throw new Error("Erro ao buscar empresa");
     return res.json();
   },
+
   async listarVagas(empresaId: number) {
     const res = await fetch(`${BASE_URL}/vagas/empresa/${empresaId}` );
     if (!res.ok) throw new Error("Erro ao listar vagas");
     return res.json();
   },
-   async criarVaga(empresaId: number, descricao: string, escolaridade: string) {
+  
+   async criarVaga(empresaId: number, titulo: string, descricao: string, escolaridade: string) {
+    console.log("Enviando para API:", { empresaId, titulo, descricao, escolaridade }); // Debug
+    
     const res = await fetch(`${BASE_URL}/vagas`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ empresaId, descricao, escolaridade } ),
+      body: JSON.stringify({ 
+        empresaId, 
+        titulo,      
+        descricao, 
+        escolaridade 
+      }),
     });
-    if (!res.ok) throw new Error("Erro ao criar vaga");
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(text || "Erro ao criar vaga");
+    }
     return res.json();
   },
   vincularSubtiposAVaga(vagaId: number, subtipoIds: number[]) {
@@ -197,5 +230,29 @@ obterVagaComSubtipos(vagaId: number) {
       body: JSON.stringify({ email, senha } ),
     });
   },
-  
+  atualizarStatusVaga(id: number, isActive: boolean) {
+    return http(`/vagas/${id}/status`, {
+      method: "PATCH",
+      body: JSON.stringify({ isActive }),
+    });
+  },
+
+  excluirVaga(id: number) {
+    return http(`/vagas/${id}`, {
+      method: "DELETE",
+    });
+  },
+  atualizarVaga(id: number, titulo: string, descricao: string, escolaridade: string) {
+    return http<Vaga>(`/vagas/${id}`, {
+      method: "PUT",
+      body: JSON.stringify({ titulo, descricao, escolaridade }),
+    });
+  },
+  //login adm
+  loginAdmin(email: string, senha: string) {
+    return http("/auth/admin/login", {
+      method: "POST",
+      body: JSON.stringify({ email, senha }),
+    });
+  },
 };

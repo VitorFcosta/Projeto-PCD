@@ -14,8 +14,7 @@ interface Props {
 
 /**
  * Lista de tipos de deficiência em formato de acordeão,
- * com subtipos e barreiras. Visual neutro, sem caixas com cores
- * muito diferentes do resto do site.
+ * com subtipos e barreiras.
  */
 export default function CandidatoDeficienciasTiposAcordeao({
   tipos,

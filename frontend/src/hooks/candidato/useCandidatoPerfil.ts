@@ -1,86 +1,82 @@
-
 import { useState, useEffect } from "react";
 import { api } from "../../lib/api";
+import type { Candidato } from "../../types/candidato"; // Certifique-se de ter o tipo Candidato
 
 export function useCandidatoPerfil(candidatoId: number) {
   const [loading, setLoading] = useState(true);
   const [salvando, setSalvando] = useState(false);
-  const [erro, setErro] = useState<string | null>(null);
   const [sucesso, setSucesso] = useState<string | null>(null);
+  const [erro, setErro] = useState<string | null>(null);
 
-  // Estados do formulário
-  const [nome, setNome] = useState("");
-  const [email, setEmail] = useState("");
-  const [telefone, setTelefone] = useState("");
-  const [escolaridade, setEscolaridade] = useState("Ensino Fundamental");
+  const [form, setForm] = useState({
+    nome: "",
+    email: "",
+    telefone: "",
+    escolaridade: "Ensino Fundamental"
+  });
 
   useEffect(() => {
-    if (!candidatoId || Number.isNaN(candidatoId)) {
-      setErro("ID de candidato inválido.");
-      setLoading(false);
-      return;
-    }
-
-    carregarCandidato();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (!candidatoId || isNaN(candidatoId)) return;
+    
+    const carregar = async () => {
+      setLoading(true);
+      try {
+        const data = await api.getCandidato(candidatoId) as unknown as Candidato;
+        setForm({
+          nome: data.nome || "",
+          email: data.email || "",
+          telefone: data.telefone || "",
+          escolaridade: data.escolaridade || "Ensino Fundamental"
+        });
+      } catch (err: any) {
+        setErro(err.message || "Erro ao carregar perfil");
+      } finally {
+        setLoading(false);
+      }
+    };
+    carregar();
   }, [candidatoId]);
 
-  async function carregarCandidato() {
-    try {
-      setLoading(true);
-      setErro(null);
+  const updateForm = (field: string, value: string) => {
+    setForm(prev => ({ ...prev, [field]: value }));
+  };
 
-      const data: any = await api.getCandidato(candidatoId);
-
-      setNome(data.nome ?? "");
-      setEmail(data.email ?? "");
-      setTelefone(data.telefone ?? "");
-      setEscolaridade(data.escolaridade ?? "Ensino Fundamental");
-    } catch (error: any) {
-      console.error(error);
-      setErro(error?.message || "Erro ao carregar perfil.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  // Apenas dispara o fluxo de salvar, sem saber nada de evento de formulário.
-  async function handleSalvar() {
-    if (!candidatoId || Number.isNaN(candidatoId)) {
-      setErro("ID de candidato inválido.");
-      return;
-    }
+  const handleSalvar = async () => {
+    setSalvando(true);
+    setSucesso(null);
+    setErro(null);
 
     try {
-      setSalvando(true);
-      setErro(null);
-      setSucesso(null);
+      if (!form.nome.trim() || !form.email.trim()) throw new Error("Nome e Email são obrigatórios");
 
       await api.atualizarCandidato(candidatoId, {
-        nome: nome.trim(),
-        email: email.trim(),
-        telefone: telefone.trim(),
-        escolaridade,
+        nome: form.nome,
+        email: form.email,
+        telefone: form.telefone,
+        escolaridade: form.escolaridade
       });
 
-      setSucesso("Perfil atualizado com sucesso!");
-      // Limpa mensagem de sucesso depois de alguns segundos
+      setSucesso("Dados atualizados com sucesso!");
       setTimeout(() => setSucesso(null), 3000);
-    } catch (error: any) {
-      console.error(error);
-      setErro(error?.message || "Erro ao salvar perfil.");
+    } catch (err: any) {
+      setErro(err.message || "Erro ao salvar perfil");
     } finally {
       setSalvando(false);
     }
-  }
+  };
 
   return {
     loading,
     salvando,
-    erro,
     sucesso,
-    form: { nome, email, telefone, escolaridade },
-    setForm: { setNome, setEmail, setTelefone, setEscolaridade },
-    handleSalvar,
+    erro,
+    form,
+    setForm: {
+      setNome: (v: string) => updateForm('nome', v),
+      setEmail: (v: string) => updateForm('email', v),
+      setTelefone: (v: string) => updateForm('telefone', v),
+      setEscolaridade: (v: string) => updateForm('escolaridade', v),
+    },
+    handleSalvar
   };
 }

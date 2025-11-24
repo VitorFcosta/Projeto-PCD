@@ -103,4 +103,18 @@ export const AuthService = {
       userType: "empresa",
     };
   },
+  //adimin
+  async loginAdmin(email: string, senha: string) {
+    const admin = await AuthRepo.findAdminByEmail(email);
+    if (!admin || admin.senha !== senha) { 
+      throw new Error("Credenciais inválidas");
+    }
+    
+    return {
+      id: admin.id,
+      nome: admin.nome,
+      email: admin.email,
+      userType: "admin"
+    };
+  },
 };

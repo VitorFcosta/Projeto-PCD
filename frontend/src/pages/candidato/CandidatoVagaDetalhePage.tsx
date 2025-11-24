@@ -1,201 +1,208 @@
 import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useCandidatoVagaDetalhe } from "../../hooks/candidato/useCandidatoVagaDetalhe";
-
-import ContainerPagina from "../../components/ui/ContainerPagina";
-import Cartao from "../../components/ui/Cartao";
-import Botao from "../../components/ui/Botao";
-import Carregando from "../../components/ui/Carregando";
-import TituloSecao from "../../components/ui/TituloSecao";
-
-import { IconVoltar, IconCheck, IconAlerta } from "../../components/icons";
+import { 
+  ArrowLeft, 
+  Building2, 
+  Send, 
+  Briefcase, 
+  GraduationCap, 
+  Loader2, 
+  AlertCircle, 
+  MapPin,
+  CheckCircle2,
+  XCircle
+} from "lucide-react";
 
 export default function CandidatoVagaDetalhePage() {
   const { id, vagaId } = useParams();
   const navigate = useNavigate();
 
-  const candidatoId = Number(id);
+  const candidatoId = id ? Number(id) : NaN;
+  const vagaIDnum = vagaId ? Number(vagaId) : NaN;
 
-  const { vagaMatch, loading, enviando, sucesso, erro, candidatar } =
-    useCandidatoVagaDetalhe(candidatoId, vagaId);
+  const { loading, vagaMatch, enviando, candidatar } = useCandidatoVagaDetalhe(candidatoId, vagaIDnum);
 
-  useEffect(() => {
-    if (sucesso && id && vagaId) {
+  useEffect(() => { window.scrollTo(0, 0); }, []);
+
+  const handleCandidatar = async () => {
+    const sucesso = await candidatar();
+    if (sucesso) {
       navigate(`/candidato/${id}/vagas/${vagaId}/sucesso`);
     }
-  }, [sucesso, id, vagaId, navigate]);
+  };
 
-  if (Number.isNaN(candidatoId) || !vagaId) {
-    return (
-      <ContainerPagina className="py-10">
-        <Cartao className="max-w-md mx-auto text-center space-y-3">
-          <IconAlerta size={32} className="text-rose-500 mx-auto" />
-          <p className="text-base text-gray-200">
-            Parâmetros inválidos para carregar a vaga.
-          </p>
-          <Botao onClick={() => navigate(-1)}>
-            <IconVoltar size={16} />
-            Voltar
-          </Botao>
-        </Cartao>
-      </ContainerPagina>
-    );
-  }
+  if (Number.isNaN(candidatoId) || Number.isNaN(vagaIDnum)) return (
+    <div className="min-h-screen flex items-center justify-center text-red-500 font-medium gap-2">
+      <AlertCircle className="w-5 h-5"/> ID Inválido
+    </div>
+  );
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="flex flex-col items-center gap-2">
-          <Carregando tamanho={30} />
-          <p className="text-base text-gray-100 font-semibold">
-            Carregando vaga...
-          </p>
-        </div>
-      </div>
-    );
-  }
+  if (loading || !vagaMatch) return (
+    <div className="min-h-screen flex flex-col items-center justify-center gap-4 text-slate-500">
+      <Loader2 className="w-10 h-10 animate-spin text-indigo-600" />
+      <p className="font-medium">Carregando vaga...</p>
+    </div>
+  );
 
-  if (erro || !vagaMatch) {
-    return (
-      <ContainerPagina className="py-10">
-        <Cartao className="max-w-md mx-auto text-center space-y-3">
-          {erro && (
-            <IconAlerta size={32} className="text-rose-500 mx-auto" />
-          )}
-          <p className="text-base text-gray-200">
-            {erro || "Vaga não encontrada."}
-          </p>
-          <Botao onClick={() => navigate(-1)}>
-            <IconVoltar size={16} />
-            Voltar
-          </Botao>
-        </Cartao>
-      </ContainerPagina>
-    );
-  }
+  const { vaga, matchScore, detalhes } = vagaMatch;
+  const percentual = Math.round(matchScore * 100);
 
-  const {
-    vaga,
-    matchScore,
-    barreirasAtendidas,
-    barreirasFaltantes,
-    barreirasQueDeramMatch = [],
-  } = vagaMatch;
-
-  const porcentagem = Math.round(matchScore * 100);
+  // Cores do Score
+  const scoreConfig = percentual >= 80 
+    ? { bg: "bg-emerald-50 dark:bg-emerald-900/20", text: "text-emerald-700 dark:text-emerald-400", border: "border-emerald-200 dark:border-emerald-800" }
+    : percentual >= 50 
+      ? { bg: "bg-amber-50 dark:bg-amber-900/20", text: "text-amber-700 dark:text-amber-400", border: "border-amber-200 dark:border-amber-800" }
+      : { bg: "bg-slate-50 dark:bg-slate-800", text: "text-slate-600 dark:text-slate-400", border: "border-slate-200 dark:border-slate-700" };
 
   return (
-    <div className="min-h-screen py-8">
-      <ContainerPagina className="max-w-3xl space-y-4">
-        {/* Voltar para lista */}
-        <button
-          type="button"
-          onClick={() => navigate(`/candidato/${candidatoId}/vagas`)}
-          className="flex items-center gap-2 text-sm text-gray-300 hover:text-gray-100"
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-12 font-sans text-slate-900 dark:text-slate-100">
+      
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+        {/* Botão Voltar */}
+        <button 
+          onClick={() => navigate(`/candidato/${id}/vagas`)} 
+          className="flex items-center gap-2 text-slate-500 hover:text-indigo-600 mb-6 transition-colors group"
         >
-          <IconVoltar size={16} />
-          Voltar
+          <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" /> 
+          <span>Voltar para oportunidades</span>
         </button>
 
-        {/* Card único */}
-        <Cartao className="space-y-6">
-          <TituloSecao
-            titulo={vaga.descricao}
-            subtitulo={vaga.empresa?.nome ?? ""}
-          />
-
-          {/* resumo da vaga */}
-          <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm">
-            <span className="rounded-full border border-gray-700 px-3 py-1 text-gray-300">
-              Escolaridade:{" "}
-              <span className="font-semibold text-gray-50">
-                {vaga.escolaridade}
-              </span>
-            </span>
-
-            <span className="rounded-full border border-emerald-500/70 px-3 py-1 text-emerald-300">
-              Compatibilidade:{" "}
-              <span className="font-semibold">{porcentagem}%</span>
-            </span>
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+          
+          {/* Header da Vaga */}
+          <div className="p-6 sm:p-8 border-b border-slate-100 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-900">
+            <div className="flex flex-col sm:flex-row justify-between items-start gap-6">
+              <div className="space-y-3 flex-1">
+                <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white leading-tight">
+                  {vaga.titulo} 
+                </h1>
+                
+                <div className="flex flex-wrap items-center gap-4 text-sm text-slate-600 dark:text-slate-400">
+                  <div className="flex items-center gap-1.5">
+                    <Building2 className="w-4 h-4 text-indigo-500" />
+                    <span className="font-medium">{vaga.empresa?.nome || "Empresa Confidencial"}</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-1.5">
+                    <MapPin className="w-4 h-4 text-slate-400" />
+                    <span>Brasil</span>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Badge de Match */}
+              <div className={`flex flex-col items-center justify-center px-4 py-2 rounded-xl border shrink-0 ${scoreConfig.bg} ${scoreConfig.border}`}>
+                <span className={`text-2xl font-bold ${scoreConfig.text}`}>
+                  {percentual}%
+                </span>
+                <span className={`text-[10px] uppercase font-bold tracking-wider opacity-80 ${scoreConfig.text}`}>
+                  Compatível
+                </span>
+              </div>
+            </div>
           </div>
 
-          <div className="border-t border-gray-800" />
+          {/* Corpo: Informações */}
+          <div className="p-6 sm:p-8 space-y-8">
+            
+            {/* Detalhes Básicos */}
+            <div className="grid sm:grid-cols-2 gap-4 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-white dark:bg-slate-800 rounded-lg text-indigo-600 shadow-sm">
+                  <GraduationCap className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Escolaridade</p>
+                  <p className="font-medium text-slate-900 dark:text-white">{vaga.escolaridade}</p>
+                </div>
+              </div>
+              
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-white dark:bg-slate-800 rounded-lg text-indigo-600 shadow-sm">
+                  <Briefcase className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Regime</p>
+                  <p className="font-medium text-slate-900 dark:text-white">CLT / Efetivo</p>
+                </div>
+              </div>
+            </div>
 
-          {/* descrição */}
-          <section className="space-y-2">
-            <h3 className="text-sm font-semibold text-gray-100">
-              Descrição da vaga
-            </h3>
-            <p className="text-sm text-gray-300 whitespace-pre-line leading-relaxed">
-              {vaga.descricaoDetalhada ||
-                "Nenhuma descrição adicional foi informada."}
-            </p>
-          </section>
+            {/* Análise de Acessibilidade */}
+            <div className="space-y-3">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                 Análise de Acessibilidade
+              </h3>
+              <div className="space-y-3">
+                {detalhes && detalhes.length > 0 ? (
+                  detalhes.map((item, idx) => (
+                    <div 
+                      key={idx} 
+                      className="flex items-start gap-4 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-700/50"
+                    >
+                      <div className={`mt-0.5 shrink-0 ${item.resolvida ? 'text-emerald-500' : 'text-rose-400'}`}>
+                        {item.resolvida ? <CheckCircle2 className="w-5 h-5" /> : <XCircle className="w-5 h-5" />}
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                          Sua necessidade: <span className="font-normal">{item.barreira.descricao}</span>
+                        </p>
+                        {item.resolvida && item.acessibilidade ? (
+                          <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1 font-medium">
+                            ✓ Atendida por: {item.acessibilidade.descricao}
+                          </p>
+                        ) : (
+                          <p className="text-xs text-rose-500 dark:text-rose-400 mt-1 font-medium">
+                            ⚠ Acessibilidade não listada pela empresa.
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-slate-500 italic text-sm">Nenhum detalhe de acessibilidade para comparar.</p>
+                )}
+              </div>
+            </div>
 
-          <div className="border-t border-gray-800" />
+            {/* Descrição Real*/}
+            <div>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3">
+                Descrição da Vaga
+              </h3>
+              <div className="prose prose-slate dark:prose-invert max-w-none text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line text-sm">
+                {vaga.descricao}
+              </div>
+            </div>
 
-          {/* acessibilidade / barreiras */}
-          <section className="space-y-2">
-            <h3 className="text-sm font-semibold text-gray-100">
-              Acessibilidade e barreiras
-            </h3>
-
-            <p className="text-sm text-gray-300">
-              <span className="text-emerald-300 font-semibold">
-                {barreirasAtendidas}
-              </span>{" "}
-              barreira(s) do seu perfil atendida(s) •{" "}
-              <span className="text-amber-300 font-semibold">
-                {barreirasFaltantes}
-              </span>{" "}
-              não atendida(s)
-            </p>
-
-            {/* lista das barreiras que deram match */}
-            {barreirasQueDeramMatch.length > 0 ? (
-              <ul className="space-y-1 mt-2">
-                {barreirasQueDeramMatch.map((b) => (
-                  <li
-                    key={b.id}
-                    className="flex items-start gap-2 text-sm text-gray-200"
-                  >
-                    <span className="mt-1 w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                    <span>{b.descricao}</span>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-xs text-gray-400">
-                Nenhuma barreira do seu perfil foi marcada como atendida.
+            {/* Botão de Ação */}
+            <div className="pt-6 border-t border-slate-100 dark:border-slate-800">
+              <button 
+                onClick={handleCandidatar}
+                disabled={enviando}
+                className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-3 transition-all transform active:scale-[0.98] disabled:opacity-70 disabled:scale-100"
+              >
+                {enviando ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span>Enviando candidatura...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Candidatar-se para a vaga</span>
+                    <Send className="w-5 h-5" /> 
+                  </>
+                )}
+              </button>
+              <p className="text-center text-xs text-slate-400 mt-3">
+                Ao se candidatar, seu perfil de acessibilidade será compartilhado com a empresa.
               </p>
-            )}
-          </section>
+            </div>
 
-          <div className="border-t border-gray-800" />
-
-          {/* botão de candidatura */}
-          <div className="flex justify-center">
-            <Botao
-              type="button"
-              onClick={candidatar}
-              disabled={enviando}
-              className="inline-flex items-center gap-2 text-sm sm:text-base px-6 py-3"
-            >
-              {enviando ? (
-                <>
-                  <Carregando tamanho={18} />
-                  Enviando candidatura...
-                </>
-              ) : (
-                <>
-                  <IconCheck size={18} />
-                  Confirmar candidatura
-                </>
-              )}
-            </Botao>
           </div>
-        </Cartao>
-      </ContainerPagina>
+        </div>
+      </div>
     </div>
   );
 }

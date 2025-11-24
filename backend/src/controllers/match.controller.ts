@@ -1,35 +1,31 @@
-// src/controllers/match.controller.ts
 import { Request, Response } from "express";
-import { encontrarVagasCompativeis, encontrarCandidatosCompativeis } from "../services/match.service";
+import { encontrarVagasCompativeis, encontrarCandidatosCompativeis, realizarCandidatura } from "../services/match.service";
 
 export const MatchController = {
   async listarVagasCompativeis(req: Request, res: Response) {
     try {
-      const candidatoId = Number(req.params.candidatoId);
-      if (isNaN(candidatoId)) {
-        return res.status(400).json({ error: "ID de candidato inválido" });
-      }
-
-      const vagas = await encontrarVagasCompativeis(candidatoId);
+      const id = Number(req.params.candidatoId);
+      const vagas = await encontrarVagasCompativeis(id);
       res.json(vagas);
-    } catch (err: any) {
-      console.error("Erro ao buscar vagas compatíveis:", err);
-      res.status(500).json({ error: err.message ?? "Erro interno no servidor" });
-    }
+    } catch (err: any) { res.status(500).json({ error: err.message }); }
   },
 
   async listarCandidatosCompativeis(req: Request, res: Response) {
     try {
-      const vagaId = Number(req.params.vagaId);
-      if (isNaN(vagaId)) {
-        return res.status(400).json({ error: "ID de vaga inválido" });
-      }
-
-      const candidatos = await encontrarCandidatosCompativeis(vagaId);
+      const id = Number(req.params.vagaId);
+      const candidatos = await encontrarCandidatosCompativeis(id);
       res.json(candidatos);
-    } catch (err: any) {
-      console.error("Erro ao buscar candidatos compatíveis:", err);
-      res.status(500).json({ error: err.message ?? "Erro interno no servidor" });
-    }
+    } catch (err: any) { res.status(500).json({ error: err.message }); }
   },
+
+  async aplicarParaVaga(req: Request, res: Response) {
+    try {
+      const { candidatoId, vagaId } = req.body;
+      await realizarCandidatura(Number(candidatoId), Number(vagaId));
+      res.status(201).json({ ok: true });
+    } catch (err: any) {
+      if (err.code === 'P2002') return res.status(400).json({ error: "Já candidatado" });
+      res.status(500).json({ error: "Erro ao aplicar" });
+    }
+  }
 };

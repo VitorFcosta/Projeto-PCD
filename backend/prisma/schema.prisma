@@ -95,10 +95,12 @@ model Vaga {
   empresaId       Int
   empresa         Empresa               @relation(fields: [empresaId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
+  titulo          String
   descricao       String
-  escolaridade    String                // <- adicionado (ou troque por enum se quiser)
+  escolaridade    String                
   subtiposAceitos VagaSubtipo[]
   acessibilidades VagaAcessibilidade[]
+  candidaturas    Candidatura[] 
 
   isActive        Boolean   @default(true)
   createdAt       DateTime  @default(now())
@@ -135,6 +137,7 @@ model Candidato {
 
   // Relações
   subtipos  CandidatoSubtipo[]
+  candidaturas Candidatura[]
 
   isActive  Boolean   @default(true)
   createdAt DateTime  @default(now())
@@ -167,4 +170,22 @@ model CandidatoSubtipoBarreira {
 
   @@id([candidatoId, subtipoId, barreiraId])
   @@index([barreiraId])
+}
+model Candidatura {
+  candidatoId Int
+  vagaId      Int
+  dataAplicacao DateTime @default(now())
+
+  candidato   Candidato @relation(fields: [candidatoId], references: [id], onDelete: Cascade)
+  vaga        Vaga      @relation(fields: [vagaId], references: [id], onDelete: Cascade)
+
+  @@id([candidatoId, vagaId]) // Um candidato só pode se aplicar uma vez na mesma vaga
+}
+model Admin {
+  id        Int      @id @default(autoincrement())
+  nome      String
+  email     String   @unique
+  senha     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
