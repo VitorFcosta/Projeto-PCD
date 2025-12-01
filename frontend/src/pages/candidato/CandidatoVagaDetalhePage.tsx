@@ -11,7 +11,8 @@ import {
   AlertCircle, 
   MapPin,
   CheckCircle2,
-  XCircle
+  XCircle,
+  Check // Importante para o botão de "Já aplicado"
 } from "lucide-react";
 
 export default function CandidatoVagaDetalhePage() {
@@ -33,19 +34,19 @@ export default function CandidatoVagaDetalhePage() {
   };
 
   if (Number.isNaN(candidatoId) || Number.isNaN(vagaIDnum)) return (
-    <div className="min-h-screen flex items-center justify-center text-red-500 font-medium gap-2">
+    <div className="min-h-screen flex items-center justify-center text-red-500 font-medium gap-2 bg-slate-50 dark:bg-slate-950">
       <AlertCircle className="w-5 h-5"/> ID Inválido
     </div>
   );
 
   if (loading || !vagaMatch) return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-4 text-slate-500">
+    <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-slate-50 dark:bg-slate-950 text-slate-500">
       <Loader2 className="w-10 h-10 animate-spin text-indigo-600" />
       <p className="font-medium">Carregando vaga...</p>
     </div>
   );
 
-  const { vaga, matchScore, detalhes } = vagaMatch;
+  const { vaga, matchScore, detalhes, jaAplicou } = vagaMatch;
   const percentual = Math.round(matchScore * 100);
 
   // Cores do Score
@@ -74,6 +75,7 @@ export default function CandidatoVagaDetalhePage() {
           <div className="p-6 sm:p-8 border-b border-slate-100 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-900">
             <div className="flex flex-col sm:flex-row justify-between items-start gap-6">
               <div className="space-y-3 flex-1">
+                {/* Título da Vaga */}
                 <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white leading-tight">
                   {vaga.titulo} 
                 </h1>
@@ -109,7 +111,7 @@ export default function CandidatoVagaDetalhePage() {
             {/* Detalhes Básicos */}
             <div className="grid sm:grid-cols-2 gap-4 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
               <div className="flex items-start gap-3">
-                <div className="p-2 bg-white dark:bg-slate-800 rounded-lg text-indigo-600 shadow-sm">
+                <div className="p-2 bg-white dark:bg-slate-800 rounded-lg text-indigo-600 shadow-sm border border-slate-100 dark:border-slate-700">
                   <GraduationCap className="w-5 h-5" />
                 </div>
                 <div>
@@ -119,7 +121,7 @@ export default function CandidatoVagaDetalhePage() {
               </div>
               
               <div className="flex items-start gap-3">
-                <div className="p-2 bg-white dark:bg-slate-800 rounded-lg text-indigo-600 shadow-sm">
+                <div className="p-2 bg-white dark:bg-slate-800 rounded-lg text-indigo-600 shadow-sm border border-slate-100 dark:border-slate-700">
                   <Briefcase className="w-5 h-5" />
                 </div>
                 <div>
@@ -161,43 +163,56 @@ export default function CandidatoVagaDetalhePage() {
                     </div>
                   ))
                 ) : (
-                  <p className="text-slate-500 italic text-sm">Nenhum detalhe de acessibilidade para comparar.</p>
+                  <p className="text-slate-500 italic text-sm">Nenhum detalhe de acessibilidade para comparar. Complete seu perfil.</p>
                 )}
               </div>
             </div>
 
-            {/* Descrição Real*/}
+            {/* Descrição Real */}
             <div>
               <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-3">
                 Descrição da Vaga
               </h3>
-              <div className="prose prose-slate dark:prose-invert max-w-none text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line text-sm">
+              <div className="prose prose-slate dark:prose-invert max-w-none text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-line text-sm sm:text-base">
                 {vaga.descricao}
               </div>
             </div>
 
-            {/* Botão de Ação */}
+            {/* Botão de Ação (Condicional) */}
             <div className="pt-6 border-t border-slate-100 dark:border-slate-800">
-              <button 
-                onClick={handleCandidatar}
-                disabled={enviando}
-                className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-3 transition-all transform active:scale-[0.98] disabled:opacity-70 disabled:scale-100"
-              >
-                {enviando ? (
-                  <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                    <span>Enviando candidatura...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>Candidatar-se para a vaga</span>
-                    <Send className="w-5 h-5" /> 
-                  </>
-                )}
-              </button>
-              <p className="text-center text-xs text-slate-400 mt-3">
-                Ao se candidatar, seu perfil de acessibilidade será compartilhado com a empresa.
-              </p>
+              {jaAplicou ? (
+                <button 
+                  disabled
+                  className="w-full py-4 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 rounded-xl font-bold flex items-center justify-center gap-3 cursor-not-allowed opacity-90"
+                >
+                  <Check className="w-5 h-5" /> 
+                  Candidatura Realizada
+                </button>
+              ) : (
+                <button 
+                  onClick={handleCandidatar}
+                  disabled={enviando}
+                  className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-3 transition-all transform active:scale-[0.98] disabled:opacity-70 disabled:scale-100"
+                >
+                  {enviando ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      <span>Enviando candidatura...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Candidatar-se para a vaga</span>
+                      <Send className="w-5 h-5" /> 
+                    </>
+                  )}
+                </button>
+              )}
+              
+              {!jaAplicou && (
+                <p className="text-center text-xs text-slate-400 mt-3">
+                  Ao se candidatar, seu perfil de acessibilidade será compartilhado com a empresa.
+                </p>
+              )}
             </div>
 
           </div>

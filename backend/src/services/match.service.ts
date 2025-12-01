@@ -8,16 +8,19 @@ export interface DetalheMatch {
 }
 
 export interface VagaComMatchScore {
-  vaga: Vaga & { [key: string]: any }; // Permite propriedades extras 
+  // Alterado para 'any' ou interseção para aceitar os relacionamentos do Prisma (Empresa, etc)
+  vaga: Vaga & { [key: string]: any }; 
   matchScore: number;
   barreirasAtendidas: number;
   barreirasFaltantes: number;
   totalBarreirasCandidato: number;
   detalhes: DetalheMatch[];
+  jaAplicou: boolean;
 }
 
 export interface CandidatoComMatchScore {
-  candidato: Candidato;
+  // Alterado para 'any' ou interseção para aceitar os relacionamentos
+  candidato: Candidato & { [key: string]: any };
   matchScore: number;
   barreirasAtendidas: number;
   barreirasFaltantes: number;
@@ -50,19 +53,23 @@ export async function encontrarVagasCompativeis(
 
   const totalBarreirasCandidato = barreirasCandidatoMap.size;
 
+  // Se não tem barreiras, retorna vazio
   if (totalBarreirasCandidato === 0) return [];
 
-  // Mapeia todas as vagas calculando o score
   const vagasComScore = vagas.map((vaga) => {
-    let barreirasAtendidas = 0;
-    const detalhes: DetalheMatch[] = [];
+    // Verifica se já aplicou
+    const jaAplicou = vaga.candidaturas.some(c => c.candidatoId === candidatoId);
 
-    // Filtro 1: A vaga aceita o subtipo?
+    // Filtro de Subtipo
     const aceitaSubtipo = candidato.subtipos.some((cs) =>
       vaga.subtiposAceitos.some((vs) => vs.subtipoId === cs.subtipoId)
     );
 
-    if (!aceitaSubtipo) return null; // Marca como null para filtrar depois
+    if (!aceitaSubtipo) return null;
+
+    // Cálculo de Match
+    let barreirasAtendidas = 0;
+    const detalhes: DetalheMatch[] = [];
 
     const acessibilidadesVagaIds = vaga.acessibilidades.map(
       (a) => a.acessibilidadeId
@@ -106,18 +113,16 @@ export async function encontrarVagasCompativeis(
       barreirasFaltantes: totalBarreirasCandidato - barreirasAtendidas,
       totalBarreirasCandidato,
       detalhes,
+      jaAplicou
     };
   });
 
-  // Filtragem e Ordenação
-  const resultadosFiltrados = vagasComScore.filter(
-    (item) => item !== null && item.matchScore > 0
-  );
-
-  // Cast final seguro
-  return resultadosFiltrados.sort(
-    (a, b) => (b!.matchScore) - (a!.matchScore)
+  // Filtra os nulos e ordena, forçando a tipagem no final
+  const resultados = vagasComScore.filter(
+    (v) => v !== null && v.matchScore > 0
   ) as VagaComMatchScore[];
+
+  return resultados.sort((a, b) => b.matchScore - a.matchScore);
 }
 
 // --- VISÃO DA EMPRESA ---
@@ -200,5 +205,5 @@ export async function encontrarCandidatosCompativeis(
     };
   });
 
-  return candidatosComScore.sort((a, b) => b.matchScore - a.matchScore);
+  return candidatosComScore.sort((a, b) => b.matchScore - a.matchScore) as CandidatoComMatchScore[];
 }

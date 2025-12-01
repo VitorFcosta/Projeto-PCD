@@ -106,6 +106,7 @@ export interface VagaComMatchScore {
   barreirasFaltantes: number;
   totalBarreirasCandidato: number;
   detalhes: DetalheMatch[]; 
+  jaAplicou: boolean; 
 }
 
 export interface CandidatoComMatchScore {
