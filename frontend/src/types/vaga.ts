@@ -17,13 +17,17 @@ export interface Vaga {
   titulo: string;
   descricao: string;
   escolaridade: string;
+  
   subtipos?: SubtipoDeficiencia[];
   acessibilidades?: Acessibilidade[];
+  
   createdAt: string;
   updatedAt: string;
   isActive: boolean;
+  
+
   _count?: {
-    candidatos?: number;
+    candidaturas?: number; 
   };
 }
 

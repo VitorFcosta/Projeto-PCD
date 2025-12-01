@@ -11,8 +11,33 @@ export const TiposController = {
     res.json(data);
   },
   async create(req: Request, res: Response) {
-    const { nome } = req.body ?? {};
-    const created = await TiposService.create(nome);
-    res.status(201).json(created);
+    try {
+      const { nome } = req.body ?? {};
+      const created = await TiposService.create(nome);
+      res.status(201).json(created);
+    } catch (e: any) {
+      res.status(400).json({ error: e.message });
+    }
   },
+  
+  async update(req: Request, res: Response) {
+    try {
+      const id = Number(req.params.id);
+      const { nome } = req.body;
+      const updated = await TiposService.update(id, nome);
+      res.json(updated);
+    } catch (e: any) {
+      res.status(400).json({ error: e.message });
+    }
+  },
+
+  async delete(req: Request, res: Response) {
+    try {
+      const id = Number(req.params.id);
+      await TiposService.delete(id);
+      res.json({ ok: true });
+    } catch (e: any) {
+      res.status(400).json({ error: e.message });
+    }
+  }
 };

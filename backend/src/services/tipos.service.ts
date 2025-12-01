@@ -12,4 +12,16 @@ export const TiposService = {
     if (!final) throw Object.assign(new Error("O campo 'nome' é obrigatório"), { status: 400 });
     return TiposRepo.create(final);
   },
+
+  async update(id: number, nome: string) {
+    if (!id) throw new Error("ID obrigatório");
+    if (!nome.trim()) throw new Error("Nome obrigatório");
+    return TiposRepo.update(id, nome.trim());
+  },
+
+  async delete(id: number) {
+    if (!id) throw new Error("ID obrigatório");
+    // O Prisma cuida do Cascade delete (apaga subtipos vinculados)
+    return TiposRepo.delete(id);
+  }
 };

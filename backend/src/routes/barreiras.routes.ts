@@ -5,4 +5,7 @@ const router = Router();
 router.get("/", BarreirasController.list);  // /barreiras
 router.post("/", BarreirasController.create);
 
+router.put("/:id", BarreirasController.update);    // <--- NOVO
+router.delete("/:id", BarreirasController.delete); // <--- NOVO
+
 export default router;

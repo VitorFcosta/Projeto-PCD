@@ -11,4 +11,16 @@ export const BarreirasController = {
     const created = await BarreirasService.create(descricao);
     res.status(201).json(created);
   },
+  async update(req: Request, res: Response) {
+    try {
+      await BarreirasService.update(Number(req.params.id), req.body.descricao);
+      res.json({ ok: true });
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  },
+  async delete(req: Request, res: Response) {
+    try {
+      await BarreirasService.delete(Number(req.params.id));
+      res.json({ ok: true });
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  },
 };

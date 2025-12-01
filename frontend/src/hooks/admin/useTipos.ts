@@ -21,5 +21,28 @@ export function useTipos() {
   }
 
   useEffect(() => { carregar(); }, []);
-  return { tipos, loading, erro, carregar };
+
+  // --- NOVAS FUNÇÕES ---
+  const removerTipo = async (id: number) => {
+    if (!confirm("Tem certeza? Isso pode apagar subtipos vinculados.")) return;
+    try {
+      await api.excluirTipo(id);
+      await carregar();
+    } catch (e: any) {
+      alert(e.message || "Erro ao excluir");
+    }
+  };
+
+  const editarTipo = async (id: number, novoNome: string) => {
+    try {
+      await api.atualizarTipo(id, novoNome);
+      await carregar();
+      return true;
+    } catch (e: any) {
+      alert(e.message || "Erro ao editar");
+      return false;
+    }
+  };
+
+  return { tipos, loading, erro, carregar, removerTipo, editarTipo };
 }

@@ -52,4 +52,14 @@ export const SubtiposRepo = {
   create(nome: string, tipoId: number) {
     return prisma.subtipoDeficiencia.create({ data: { nome, tipoId } });
   },
+    update(id: number, nome: string, tipoId: number) {
+    return prisma.subtipoDeficiencia.update({
+      where: { id },
+      data: { nome, tipoId }
+    });
+  },
+
+  delete(id: number) {
+    return prisma.subtipoDeficiencia.delete({ where: { id } });
+  }
 };

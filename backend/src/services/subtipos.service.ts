@@ -38,4 +38,14 @@ export const SubtiposService = {
 
     return SubtiposRepo.create(final, tipoId);
   },
+  async update(id: number, nome: string, tipoId: number) {
+    if (!id) throw new Error("ID obrigatório");
+    const finalName = (nome ?? "").trim();
+    if (!finalName) throw new Error("Nome obrigatório");
+    return SubtiposRepo.update(id, finalName, tipoId);
+  },
+
+  async delete(id: number) {
+    return SubtiposRepo.delete(id);
+  },
 };

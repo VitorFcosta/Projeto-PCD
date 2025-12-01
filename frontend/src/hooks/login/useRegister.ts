@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { api } from "../../lib/api";
 import { useAuth } from "../../context/AuthContext";
 
 export function useRegister() {
+  const [searchParams] = useSearchParams(); 
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -18,7 +20,16 @@ export function useRegister() {
   
   const { login } = useAuth();
 
-  // ... (handleChange mantém igual)
+  // Efeito: Ao carregar a página, verifica a URL e define o tipo
+  useEffect(() => {
+    const type = searchParams.get("type");
+    if (type === "empresa") {
+      setFormData(prev => ({ ...prev, userType: "empresa" }));
+    } else if (type === "candidato") {
+      setFormData(prev => ({ ...prev, userType: "candidato" }));
+    }
+  }, [searchParams]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -30,7 +41,6 @@ export function useRegister() {
     setLoading(true);
 
     try {
-      // ... (validações mantêm igual)
       if (!formData.name || !formData.email || !formData.password) throw new Error("Campos obrigatórios vazios");
       if (formData.password !== formData.confirmPassword) throw new Error("As senhas não correspondem");
 
@@ -53,7 +63,6 @@ export function useRegister() {
         });
       }
 
-      // Login automático após registro
       login({
         id: resultado.id,
         nome: resultado.nome,

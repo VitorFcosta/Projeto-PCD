@@ -255,4 +255,30 @@ obterVagaComSubtipos(vagaId: number) {
       body: JSON.stringify({ email, senha }),
     });
   },
+  atualizarTipo(id: number, nome: string) {
+    return http<TipoDeficiencia>(`/tipos/${id}`, {
+      method: "PUT",
+      body: JSON.stringify({ nome }),
+    });
+  },
+
+  excluirTipo(id: number) {
+    return http(`/tipos/${id}`, {
+      method: "DELETE",
+    });
+  },
+   atualizarSubtipo(id: number, nome: string, tipoId: number) {
+    return http(`/subtipos/${id}`, { method: "PUT", body: JSON.stringify({ nome, tipoId }) });
+  },
+  excluirSubtipo(id: number) { return http(`/subtipos/${id}`, { method: "DELETE" }); },
+
+  atualizarBarreira(id: number, descricao: string) {
+    return http(`/barreiras/${id}`, { method: "PUT", body: JSON.stringify({ descricao }) });
+  },
+  excluirBarreira(id: number) { return http(`/barreiras/${id}`, { method: "DELETE" }); },
+
+  atualizarAcessibilidade(id: number, descricao: string) {
+    return http(`/acessibilidades/${id}`, { method: "PUT", body: JSON.stringify({ descricao }) });
+  },
+  excluirAcessibilidade(id: number) { return http(`/acessibilidades/${id}`, { method: "DELETE" }); },
 };

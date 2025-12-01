@@ -16,4 +16,19 @@ export const SubtiposController = {
     const created = await SubtiposService.create(nome, Number(tipoId));
     res.status(201).json(created);
   },
+  async update(req: Request, res: Response) {
+    try {
+      const id = Number(req.params.id);
+      const { nome, tipoId } = req.body;
+      const updated = await SubtiposService.update(id, nome, Number(tipoId));
+      res.json(updated);
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  },
+
+  async delete(req: Request, res: Response) {
+    try {
+      await SubtiposService.delete(Number(req.params.id));
+      res.json({ ok: true });
+    } catch (e: any) { res.status(400).json({ error: e.message }); }
+  },
 };

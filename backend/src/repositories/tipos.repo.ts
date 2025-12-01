@@ -5,7 +5,6 @@ export const TiposRepo = {
     return prisma.tipoDeficiencia.findMany({ orderBy: { id: "asc" } });
   },
 
-  //  Adicionado o 'include' profundo para trazer barreiras e acessibilidades
   listWithSubtipos() {
     return prisma.tipoDeficiencia.findMany({
       orderBy: { id: "asc" },
@@ -13,16 +12,12 @@ export const TiposRepo = {
         subtipos: { 
           orderBy: { id: "asc" },
           include: {
-            // Traz as barreiras vinculadas ao subtipo
             barreiras: {
               include: {
                 barreira: {
                   include: {
-                    // Traz as acessibilidades vinculadas à barreira
                     acessibilidades: {
-                      include: {
-                        acessibilidade: true
-                      }
+                      include: { acessibilidade: true }
                     }
                   }
                 }
@@ -41,4 +36,17 @@ export const TiposRepo = {
   findById(id: number) {
     return prisma.tipoDeficiencia.findUnique({ where: { id } });
   },
+
+  update(id: number, nome: string) {
+    return prisma.tipoDeficiencia.update({
+      where: { id },
+      data: { nome }
+    });
+  },
+
+  delete(id: number) {
+    return prisma.tipoDeficiencia.delete({
+      where: { id }
+    });
+  }
 };

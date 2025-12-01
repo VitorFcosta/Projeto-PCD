@@ -12,7 +12,7 @@ import {
   Tag, 
   Settings 
 } from "lucide-react";
-import type{ Vaga } from "../../types/vaga";
+import type { Vaga } from "../../types/vaga";
 
 interface Props {
   vaga: Vaga;
@@ -24,7 +24,6 @@ export default function VagaCard({ vaga, onToggleStatus, onDelete }: Props) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Fecha o menu ao clicar fora
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -39,21 +38,19 @@ export default function VagaCard({ vaga, onToggleStatus, onDelete }: Props) {
     day: '2-digit', month: 'short', year: 'numeric'
   });
 
-  const candidatosCount = vaga._count?.candidatos || 0;
+  // --- CORREÇÃO: Lendo a propriedade correta ---
+  const candidatosCount = vaga._count?.candidaturas || 0;
   
-  // Verifica se a vaga tem configurações de acessibilidade/subtipos
   const temConfiguracao = (vaga.subtipos && vaga.subtipos.length > 0) || (vaga.acessibilidades && vaga.acessibilidades.length > 0);
 
   return (
     <div className={`group bg-white dark:bg-gray-800 rounded-xl border shadow-sm hover:shadow-md transition-all duration-300 flex flex-col h-full relative overflow-visible ${vaga.isActive === false ? 'opacity-75 border-gray-200 dark:border-gray-700' : 'border-gray-200 dark:border-gray-700 hover:border-indigo-400 dark:hover:border-indigo-500'}`}>
       
-      {/* Barra lateral de status visual */}
       <div className={`absolute left-0 top-0 bottom-0 w-1 rounded-l-xl ${vaga.isActive !== false ? 'bg-emerald-500' : 'bg-gray-300 dark:bg-gray-600'}`} />
 
       <div className="p-5 flex-1 ml-1">
         <div className="flex justify-between items-start mb-3 relative">
           
-          {/* Chips de Status e Data */}
           <div className="flex items-center gap-2">
             <span className={`px-2.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
               vaga.isActive !== false 
@@ -67,7 +64,6 @@ export default function VagaCard({ vaga, onToggleStatus, onDelete }: Props) {
             </span>
           </div>
           
-          {/* MENU DE AÇÕES (DROPDOWN) */}
           <div className="relative" ref={menuRef}>
             <button 
               onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -100,7 +96,6 @@ export default function VagaCard({ vaga, onToggleStatus, onDelete }: Props) {
           </div>
         </div>
 
-        {/* Título e Descrição Linkáveis */}
         <Link to={`${vaga.id}`} className="block group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
           <h3 className={`text-lg font-bold leading-snug mb-1 ${vaga.isActive === false ? 'text-gray-500 line-through decoration-gray-300' : 'text-gray-900 dark:text-white'}`}>
             {vaga.titulo}
@@ -110,7 +105,6 @@ export default function VagaCard({ vaga, onToggleStatus, onDelete }: Props) {
           </p>
         </Link>
 
-        {/* Metadados */}
         <div className="space-y-2.5">
           <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
             <GraduationCap className="w-4 h-4 text-gray-400" />
@@ -131,7 +125,6 @@ export default function VagaCard({ vaga, onToggleStatus, onDelete }: Props) {
         </div>
       </div>
 
-      {/* Footer do Card */}
       <div className="px-5 py-3 ml-1 border-t border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 flex items-center justify-between rounded-b-xl">
         <Link 
           to={`${vaga.id}/candidatos`}

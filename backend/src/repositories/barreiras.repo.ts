@@ -22,4 +22,10 @@ export const BarreirasRepo = {
       },
     });
   },
+  update(id: number, descricao: string) {
+    return prisma.barreira.update({ where: { id }, data: { descricao } });
+  },
+  delete(id: number) {
+    return prisma.barreira.delete({ where: { id } });
+  },
 };

@@ -48,12 +48,14 @@ export default function HomePage() {
                   >
                     Começar Agora <ArrowRight className="w-5 h-5 ml-2" />
                   </Link>
-                  <Link 
-                    to="/sobre" 
+                  
+                  {/* Link Âncora para a seção abaixo */}
+                  <a 
+                    href="#diferenciais" 
                     className="inline-flex items-center justify-center px-8 py-4 text-base font-bold text-slate-700 dark:text-slate-200 transition-all duration-200 bg-white dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-xl hover:bg-slate-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                   >
                     Saiba mais
-                  </Link>
+                  </a>
                 </div>
                 
                 <div className="pt-6 flex items-center justify-center lg:justify-start gap-6 text-sm text-slate-500 dark:text-slate-400 font-medium">
@@ -120,8 +122,9 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* --- FEATURES SECTION --- */}
-        <section className="py-24 bg-white dark:bg-gray-950">
+        {/* FEATURES SECTION */}
+        {/*  Adicionado ID para âncora e scroll-margin para não ficar colado no topo */}
+        <section id="diferenciais" className="py-24 bg-white dark:bg-gray-950 scroll-mt-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center max-w-3xl mx-auto mb-16">
               <h2 className="text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl">
